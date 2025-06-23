@@ -34,16 +34,72 @@
   document.body.appendChild(renderer.domElement);
 
   // Lighting
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5, 10, 5);
-  scene.add(light);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(5, 10, 5);
+  scene.add(dirLight);
 
-  // Mountains far away
-  const mountainMaterial = new THREE.MeshStandardMaterial({ color: 0x888888, flatShading: true });
-  for (let i = -3; i <= 3; i++) {
-    const mountainGeo = new THREE.ConeGeometry(3, 5, 4);
-    const mountain = new THREE.Mesh(mountainGeo, mountainMaterial);
-    mountain.position.set(i * 6, -2.5, -30);
+  // Add warm yellow lights near buildings to simulate windows
+  const buildingLights = [];
+  function addBuildingLight(x, y, z) {
+    const pointLight = new THREE.PointLight(0xffee88, 0.8, 10, 2);
+    pointLight.position.set(x, y, z);
+    scene.add(pointLight);
+    buildingLights.push(pointLight);
+  }
+
+  // Buildings fading away on left and right
+  const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, flatShading: true });
+
+  function createBuilding(x, y, z, width, height, depth, opacity) {
+    const geometry = new THREE.BoxGeometry(width, height, depth);
+    const material = buildingMaterial.clone();
+    material.opacity = opacity;
+    material.transparent = opacity < 1;
+    const building = new THREE.Mesh(geometry, material);
+    building.position.set(x, y + height / 2, z);
+    return building;
+  }
+
+  const buildingCount = 12;
+  const startZ = 0;
+  const spacingZ = -6;
+  const baseHeight = 4;
+
+  for (let i = 0; i < buildingCount; i++) {
+    const zPos = startZ + i * spacingZ;
+    const scale = 1 - i * 0.08;
+    const opacity = 1 - i * 0.09;
+
+    // Left side buildings
+    const leftBuilding = createBuilding(
+      -5, 0, zPos,
+      2 * scale, baseHeight * scale, 4 * scale,
+      opacity
+    );
+    scene.add(leftBuilding);
+    // Add light near left buildings (somewhere middle height and front)
+    addBuildingLight(-5, baseHeight * scale * 0.7, zPos + 1);
+
+    // Right side buildings
+    const rightBuilding = createBuilding(
+      5, 0, zPos,
+      2 * scale, baseHeight * scale, 4 * scale,
+      opacity
+    );
+    scene.add(rightBuilding);
+    addBuildingLight(5, baseHeight * scale * 0.7, zPos + 1);
+  }
+
+  // Mountains aligned in one-point perspective (along z-axis, centered)
+  const mountainMaterial = new THREE.MeshStandardMaterial({ color: 0x888888, flatShading: true, transparent: true });
+  const mountainCount = 8;
+  for (let i = 0; i < mountainCount; i++) {
+    const geometry = new THREE.ConeGeometry(4, 7, 4);
+    const mountain = new THREE.Mesh(geometry, mountainMaterial.clone());
+    const zPos = -40 - i * 8;
+    mountain.position.set(0, -3, zPos);
+    // Fade mountains with distance
+    mountain.material.opacity = 1 - i * 0.1;
     scene.add(mountain);
   }
 
@@ -77,12 +133,12 @@
     ctx.fill();
   }
 
-  // Fill background
+  // Fill background - smaller button now
   ctx.fillStyle = '#007bff'; // Bootstrap blue
   roundRect(ctx, 10, 10, 236, 108, 20);
 
   // Button text
-  ctx.font = 'bold 40px Arial';
+  ctx.font = 'bold 28px Arial';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -90,50 +146,10 @@
 
   const buttonTexture = new THREE.CanvasTexture(buttonCanvas);
   const buttonMaterial = new THREE.MeshBasicMaterial({ map: buttonTexture, transparent: true });
-  const buttonGeometry = new THREE.PlaneGeometry(3, 1.5);
+  const buttonGeometry = new THREE.PlaneGeometry(2, 1); // smaller size
   const registerButton = new THREE.Mesh(buttonGeometry, buttonMaterial);
   registerButton.position.set(0, 0, 0.11);
   computer.add(registerButton);
-
-  // Buildings fading away on left and right
-  const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, flatShading: true });
-
-  function createBuilding(x, y, z, width, height, depth, opacity) {
-    const geometry = new THREE.BoxGeometry(width, height, depth);
-    const material = buildingMaterial.clone();
-    material.opacity = opacity;
-    material.transparent = opacity < 1;
-    const building = new THREE.Mesh(geometry, material);
-    building.position.set(x, y + height / 2, z);
-    return building;
-  }
-
-  const buildingCount = 12;
-  const startZ = 0;
-  const spacingZ = -6;
-  const baseHeight = 4;
-
-  for (let i = 0; i < buildingCount; i++) {
-    const zPos = startZ + i * spacingZ;
-    const scale = 1 - i * 0.08;
-    const opacity = 1 - i * 0.09;
-
-    // Left side buildings
-    const leftBuilding = createBuilding(
-      -5, 0, zPos,
-      2 * scale, baseHeight * scale, 4 * scale,
-      opacity
-    );
-    scene.add(leftBuilding);
-
-    // Right side buildings
-    const rightBuilding = createBuilding(
-      5, 0, zPos,
-      2 * scale, baseHeight * scale, 4 * scale,
-      opacity
-    );
-    scene.add(rightBuilding);
-  }
 
   // Snow particles
   const snowCount = 800;
@@ -156,7 +172,6 @@
   const mouse = new THREE.Vector2();
 
   function onClick(event) {
-    // Convert mouse position to normalized device coordinates (-1 to +1)
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
