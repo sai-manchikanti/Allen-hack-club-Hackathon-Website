@@ -2,114 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hackathon Club</title>
+  <title>Hackathon Club 3D</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    body { margin: 0; overflow: hidden; }
+    body { margin: 0; overflow: hidden; background: #add8e6; }
     canvas { display: block; }
   </style>
 </head>
 <body>
-  <div class="overlay">
-  <h1>Hackathon Club</h1>
-  <p>Join the coding adventure! ❄️</p>
-</div>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
-  <script>
-    // Scene, Camera, Renderer
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#add8e6'); // baby blue
+<script>
+  // Scene
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#add8e6'); // baby blue
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2, 6);
+  // Camera
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 2, 10);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Light
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 10, 5);
+  scene.add(light);
+
+  // Mountains in the distance
+  const mountainMaterial = new THREE.MeshStandardMaterial({ color: 0x888888, flatShading: true });
+  for (let i = -3; i <= 3; i++) {
+    const mountainGeo = new THREE.ConeGeometry(3, 5, 4);
+    const mountain = new THREE.Mesh(mountainGeo, mountainMaterial);
+    mountain.position.set(i * 6, -2.5, -30); // spread out far back
+    scene.add(mountain);
+  }
+
+  // Computer (flat box)
+  const computer = new THREE.Mesh(
+    new THREE.BoxGeometry(4, 2.5, 0.2),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+  computer.position.set(0, 0, 0);
+  scene.add(computer);
+
+  // "Register Now" Label on Computer
+  const labelCanvas = document.createElement('canvas');
+  labelCanvas.width = 256;
+  labelCanvas.height = 128;
+  const ctx = labelCanvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 256, 128);
+  ctx.font = 'bold 28px Arial';
+  ctx.fillStyle = '#000000';
+  ctx.fillText('Register Now', 40, 70);
+
+  const labelTexture = new THREE.CanvasTexture(labelCanvas);
+  const labelMaterial = new THREE.MeshBasicMaterial({ map: labelTexture });
+  const labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 1.5), labelMaterial);
+  labelMesh.position.set(0, 0, 0.11);
+  computer.add(labelMesh);
+
+  // Snow Particles
+  const snowCount = 800;
+  const snowGeometry = new THREE.BufferGeometry();
+  const snowPositions = [];
+
+  for (let i = 0; i < snowCount; i++) {
+    snowPositions.push(
+      (Math.random() - 0.5) * 100, // x
+      Math.random() * 30,         // y
+      (Math.random() - 0.5) * 100 // z
+    );
+  }
+
+  snowGeometry.setAttribute('position', new THREE.Float32BufferAttribute(snowPositions, 3));
+  const snowMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+  const snow = new THREE.Points(snowGeometry, snowMaterial);
+  scene.add(snow);
+
+  // Animate
+  function animate() {
+    requestAnimationFrame(animate);
+
+    // Move snow
+    const pos = snowGeometry.attributes.position.array;
+    for (let i = 1; i < pos.length; i += 3) {
+      pos[i] -= 0.05;
+      if (pos[i] < -2) pos[i] = 20; // reset to top
+    }
+    snowGeometry.attributes.position.needsUpdate = true;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  // Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-    // Lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 10, 7.5);
-    scene.add(light);
-
-    // Mountains (just triangle-shaped geometry for now)
-    const mountainMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, flatShading: true });
-    for (let i = 0; i < 5; i++) {
-      const geometry = new THREE.ConeGeometry(3, 4, 4);
-      const mountain = new THREE.Mesh(geometry, mountainMaterial);
-      mountain.position.set(i * 5 - 10, -2, -10);
-      scene.add(mountain);
-    }
-
-    // Computer (simple box)
-    const computerGeometry = new THREE.BoxGeometry(2, 1.5, 0.1);
-    const computerMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-    const computer = new THREE.Mesh(computerGeometry, computerMaterial);
-    computer.position.set(0, 0, 0);
-    scene.add(computer);
-
-    // "Register" label (simulated with a texture for now)
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 128;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = 'bold 36px Arial';
-    ctx.fillStyle = '#000000';
-    ctx.fillText('REGISTER', 50, 70);
-
-    const labelTexture = new THREE.CanvasTexture(canvas);
-    const labelMaterial = new THREE.MeshBasicMaterial({ map: labelTexture });
-    const label = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.75), labelMaterial);
-    label.position.set(0, 0, 0.06); // slightly in front of computer
-    computer.add(label);
-
-    // Snow particles
-    const snowCount = 1000;
-    const snowGeometry = new THREE.BufferGeometry();
-    const snowPositions = [];
-
-    for (let i = 0; i < snowCount; i++) {
-      snowPositions.push(
-        (Math.random() - 0.5) * 20,
-        Math.random() * 10,
-        (Math.random() - 0.5) * 20
-      );
-    }
-
-    snowGeometry.setAttribute('position', new THREE.Float32BufferAttribute(snowPositions, 3));
-    const snowMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 });
-    const snow = new THREE.Points(snowGeometry, snowMaterial);
-    scene.add(snow);
-
-    // Animation
-    function animate() {
-      requestAnimationFrame(animate);
-
-      // Move snow down
-      const positions = snowGeometry.attributes.position.array;
-      for (let i = 1; i < positions.length; i += 3) {
-        positions[i] -= 0.02;
-        if (positions[i] < 0) positions[i] = 10;
-      }
-      snowGeometry.attributes.position.needsUpdate = true;
-
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    // Responsive
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
