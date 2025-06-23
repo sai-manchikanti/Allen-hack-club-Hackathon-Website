@@ -1,0 +1,37 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #add8e6; /* baby blue fallback */
+}
+
+/* Make canvas full screen */
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Optional overlay UI styling */
+.overlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.overlay h1 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.overlay p {
+  margin: 0;
+  font-size: 14px;
+}
