@@ -13,9 +13,10 @@
     margin: 0;
     background: #add8e6; /* baby blue */
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    perspective: 1000px; /* Enable 3D perspective */
+    font-family: Arial, sans-serif;
+    perspective: 800px; /* Enable 3D perspective */
     height: 100vh;
+    position: relative;
   }
 
   /* Snow container */
@@ -44,9 +45,9 @@
 
   /* Container for the whole scene */
   .scene {
-    position: relative;
     width: 100%;
     height: 100vh;
+    position: relative;
     transform-style: preserve-3d;
   }
 
@@ -56,7 +57,8 @@
     top: 0; bottom: 0;
     width: 40vw;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-end;
     pointer-events: none;
   }
 
@@ -64,38 +66,34 @@
   .buildings.left {
     left: 0;
     transform-origin: right center;
-    transform: translateZ(-200px) rotateY(15deg);
+    transform: translateZ(-150px) rotateY(15deg);
   }
   .buildings.right {
     right: 0;
     transform-origin: left center;
-    transform: translateZ(-200px) rotateY(-15deg);
+    transform: translateZ(-150px) rotateY(-15deg);
   }
 
   /* Individual building */
   .building {
-    position: relative;
-    width: 60px;
     background: #444;
-    box-shadow: 0 0 5px #222 inset;
-    border-radius: 4px 4px 0 0;
-    margin-bottom: 30px;
+    border-radius: 6px 6px 0 0;
+    margin: 8px auto;
     opacity: 0.9;
+    position: relative;
   }
   /* Buildings fade away with scale & opacity */
-  .buildings.left .building:nth-child(1) { height: 240px; transform: scale(1); opacity: 1; }
-  .buildings.left .building:nth-child(2) { height: 210px; transform: scale(0.9); opacity: 0.85; }
-  .buildings.left .building:nth-child(3) { height: 180px; transform: scale(0.8); opacity: 0.7; }
-  .buildings.left .building:nth-child(4) { height: 150px; transform: scale(0.7); opacity: 0.55; }
-  .buildings.left .building:nth-child(5) { height: 120px; transform: scale(0.6); opacity: 0.4; }
-  .buildings.left .building:nth-child(6) { height: 90px; transform: scale(0.5); opacity: 0.25; }
+  .buildings.left .building:nth-child(1) { height: 240px; width: 60px; transform: scale(1); opacity: 1; }
+  .buildings.left .building:nth-child(2) { height: 210px; width: 55px; transform: scale(0.9); opacity: 0.85; }
+  .buildings.left .building:nth-child(3) { height: 180px; width: 50px; transform: scale(0.8); opacity: 0.7; }
+  .buildings.left .building:nth-child(4) { height: 150px; width: 45px; transform: scale(0.7); opacity: 0.55; }
+  .buildings.left .building:nth-child(5) { height: 120px; width: 40px; transform: scale(0.6); opacity: 0.4; }
 
-  .buildings.right .building:nth-child(1) { height: 240px; transform: scale(1); opacity: 1; }
-  .buildings.right .building:nth-child(2) { height: 210px; transform: scale(0.9); opacity: 0.85; }
-  .buildings.right .building:nth-child(3) { height: 180px; transform: scale(0.8); opacity: 0.7; }
-  .buildings.right .building:nth-child(4) { height: 150px; transform: scale(0.7); opacity: 0.55; }
-  .buildings.right .building:nth-child(5) { height: 120px; transform: scale(0.6); opacity: 0.4; }
-  .buildings.right .building:nth-child(6) { height: 90px; transform: scale(0.5); opacity: 0.25; }
+  .buildings.right .building:nth-child(1) { height: 240px; width: 60px; transform: scale(1); opacity: 1; }
+  .buildings.right .building:nth-child(2) { height: 210px; width: 55px; transform: scale(0.9); opacity: 0.85; }
+  .buildings.right .building:nth-child(3) { height: 180px; width: 50px; transform: scale(0.8); opacity: 0.7; }
+  .buildings.right .building:nth-child(4) { height: 150px; width: 45px; transform: scale(0.7); opacity: 0.55; }
+  .buildings.right .building:nth-child(5) { height: 120px; width: 40px; transform: scale(0.6); opacity: 0.4; }
 
   /* Windows on buildings - yellow squares with glow */
   .window {
@@ -119,7 +117,7 @@
   /* Computer container */
   .computer {
     position: absolute;
-    bottom: 50px;
+    bottom: 40px;
     left: 50%;
     transform-style: preserve-3d;
     transform: translateX(-50%) translateZ(100px);
@@ -148,8 +146,9 @@
     align-items: center;
     color: white;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
+    user-select: none;
   }
   .screen:hover {
     background: #0056b3;
@@ -190,8 +189,8 @@
 <div class="scene">
 
   <!-- Buildings on left -->
-  <div class="buildings left">
-    <div class="building">
+  <div class="buildings left" aria-label="Buildings on left side">
+    <div class="building" aria-label="Building 1">
       <div class="windows">
         <div class="window"></div>
         <div class="window yellow-glow"></div>
@@ -200,7 +199,7 @@
         <div class="window"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="Building 2">
       <div class="windows">
         <div class="window yellow-glow"></div>
         <div class="window"></div>
@@ -208,34 +207,29 @@
         <div class="window"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="Building 3">
       <div class="windows">
         <div class="window"></div>
         <div class="window yellow-glow"></div>
         <div class="window yellow-glow"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="Building 4">
       <div class="windows">
         <div class="window yellow-glow"></div>
         <div class="window"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="Building 5">
       <div class="windows">
         <div class="window yellow-glow"></div>
-      </div>
-    </div>
-    <div class="building">
-      <div class="windows">
-        <div class="window"></div>
       </div>
     </div>
   </div>
 
   <!-- Buildings on right -->
-  <div class="buildings right">
-    <div class="building">
+  <div class="buildings right" aria-label="Buildings on right side">
+    <div class="building" aria-label="Building 1">
       <div class="windows">
         <div class="window yellow-glow"></div>
         <div class="window"></div>
@@ -244,7 +238,7 @@
         <div class="window yellow-glow"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="Building 2">
       <div class="windows">
         <div class="window"></div>
         <div class="window yellow-glow"></div>
@@ -252,60 +246,32 @@
         <div class="window yellow-glow"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="Building 3">
       <div class="windows">
         <div class="window yellow-glow"></div>
         <div class="window yellow-glow"></div>
         <div class="window"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="Building 4">
       <div class="windows">
         <div class="window"></div>
         <div class="window yellow-glow"></div>
       </div>
     </div>
-    <div class="building">
+    <div class="building" aria-label="
       <div class="windows">
         <div class="window yellow-glow"></div>
-      </div>
-    </div>
-    <div class="building">
-      <div class="windows">
-        <div class="window"></div>
       </div>
     </div>
   </div>
 
   <!-- Computer -->
-  <div class="computer" role="button" tabindex="0" aria-label="Register Now Button">
-    <div class="screen" onclick="alert('Register button clicked!')">
+  <div class="computer" role="main" aria-label="Computer with register button">
+    <div class="screen" tabindex="0" role="button" aria-pressed="false" aria-label="Register Now button" onclick="alert('Registered!')">
       Register Now
     </div>
-    <div class="keyboard">
-      <!-- 10 keys per row, 3 rows -->
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-
+    <div class="keyboard" aria-label="Keyboard keys">
       <div class="key"></div>
       <div class="key yellow-glow"></div>
       <div class="key"></div>
@@ -318,26 +284,30 @@
       <div class="key yellow-glow"></div>
     </div>
   </div>
+
 </div>
 
-<!-- Snow -->
+<!-- Snow container -->
 <div class="snow" aria-hidden="true"></div>
 
 <script>
-  // Create 50 snowflakes
+  // Create falling snowflakes dynamically
   const snowContainer = document.querySelector('.snow');
   const flakesCount = 50;
 
-  for(let i=0; i<flakesCount; i++){
+  for (let i = 0; i < flakesCount; i++) {
     const flake = document.createElement('div');
     flake.classList.add('snowflake');
-    // random size 4-10px
-    const size = 4 + Math.random()*6;
+    // Random size 3-8px
+    const size = 3 + Math.random() * 5;
     flake.style.width = size + 'px';
     flake.style.height = size + 'px';
+    // Random horizontal start position (vw)
     flake.style.left = Math.random() * 100 + 'vw';
-    flake.style.animationDuration = (5 + Math.random()*5) + 's';
-    flake.style.animationDelay = Math.random() * 10 + 's';
+    // Random animation duration 5-12s
+    flake.style.animationDuration = (5 + Math.random() * 7) + 's';
+    // Random animation delay -10s to 0 to spread out start
+    flake.style.animationDelay = (-10 + Math.random() * 10) + 's';
     snowContainer.appendChild(flake);
   }
 </script>
