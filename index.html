@@ -3,44 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <title>Hackathon Club 3D</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
-    body { margin: 0; overflow: hidden; background: #add8e6; }
-    canvas { display: block; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #add8e6; /* baby blue */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: pointer; /* pointer cursor for interactivity */
+    }
   </style>
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
-  // Scene
+  // Scene setup
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#add8e6'); // baby blue
+  scene.background = new THREE.Color('#add8e6');
 
-  // Camera
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.set(0, 2, 10);
 
-  // Renderer
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // Light
+  // Lighting
   const light = new THREE.DirectionalLight(0xffffff, 1);
   light.position.set(5, 10, 5);
   scene.add(light);
 
-  // Mountains in the distance
+  // Mountains far away
   const mountainMaterial = new THREE.MeshStandardMaterial({ color: 0x888888, flatShading: true });
   for (let i = -3; i <= 3; i++) {
     const mountainGeo = new THREE.ConeGeometry(3, 5, 4);
     const mountain = new THREE.Mesh(mountainGeo, mountainMaterial);
-    mountain.position.set(i * 6, -2.5, -30); // spread out far back
+    mountain.position.set(i * 6, -2.5, -30);
     scene.add(mountain);
   }
 
-  // Computer (flat box)
+  // Computer close
   const computer = new THREE.Mesh(
     new THREE.BoxGeometry(4, 2.5, 0.2),
     new THREE.MeshStandardMaterial({ color: 0x222222 })
@@ -48,50 +55,130 @@
   computer.position.set(0, 0, 0);
   scene.add(computer);
 
-  // "Register Now" Label on Computer
-  const labelCanvas = document.createElement('canvas');
-  labelCanvas.width = 256;
-  labelCanvas.height = 128;
-  const ctx = labelCanvas.getContext('2d');
+  // Register Button - Canvas texture for text
+  const buttonCanvas = document.createElement('canvas');
+  buttonCanvas.width = 256;
+  buttonCanvas.height = 128;
+  const ctx = buttonCanvas.getContext('2d');
+
+  // Draw button background with rounded corners
+  function roundRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Fill background
+  ctx.fillStyle = '#007bff'; // Bootstrap blue
+  roundRect(ctx, 10, 10, 236, 108, 20);
+
+  // Button text
+  ctx.font = 'bold 40px Arial';
   ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, 256, 128);
-  ctx.font = 'bold 28px Arial';
-  ctx.fillStyle = '#000000';
-  ctx.fillText('Register Now', 40, 70);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Register Now', buttonCanvas.width / 2, buttonCanvas.height / 2);
 
-  const labelTexture = new THREE.CanvasTexture(labelCanvas);
-  const labelMaterial = new THREE.MeshBasicMaterial({ map: labelTexture });
-  const labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 1.5), labelMaterial);
-  labelMesh.position.set(0, 0, 0.11);
-  computer.add(labelMesh);
+  const buttonTexture = new THREE.CanvasTexture(buttonCanvas);
+  const buttonMaterial = new THREE.MeshBasicMaterial({ map: buttonTexture, transparent: true });
+  const buttonGeometry = new THREE.PlaneGeometry(3, 1.5);
+  const registerButton = new THREE.Mesh(buttonGeometry, buttonMaterial);
+  registerButton.position.set(0, 0, 0.11);
+  computer.add(registerButton);
 
-  // Snow Particles
+  // Buildings fading away on left and right
+  const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, flatShading: true });
+
+  function createBuilding(x, y, z, width, height, depth, opacity) {
+    const geometry = new THREE.BoxGeometry(width, height, depth);
+    const material = buildingMaterial.clone();
+    material.opacity = opacity;
+    material.transparent = opacity < 1;
+    const building = new THREE.Mesh(geometry, material);
+    building.position.set(x, y + height / 2, z);
+    return building;
+  }
+
+  const buildingCount = 12;
+  const startZ = 0;
+  const spacingZ = -6;
+  const baseHeight = 4;
+
+  for (let i = 0; i < buildingCount; i++) {
+    const zPos = startZ + i * spacingZ;
+    const scale = 1 - i * 0.08;
+    const opacity = 1 - i * 0.09;
+
+    // Left side buildings
+    const leftBuilding = createBuilding(
+      -5, 0, zPos,
+      2 * scale, baseHeight * scale, 4 * scale,
+      opacity
+    );
+    scene.add(leftBuilding);
+
+    // Right side buildings
+    const rightBuilding = createBuilding(
+      5, 0, zPos,
+      2 * scale, baseHeight * scale, 4 * scale,
+      opacity
+    );
+    scene.add(rightBuilding);
+  }
+
+  // Snow particles
   const snowCount = 800;
   const snowGeometry = new THREE.BufferGeometry();
   const snowPositions = [];
-
   for (let i = 0; i < snowCount; i++) {
     snowPositions.push(
-      (Math.random() - 0.5) * 100, // x
-      Math.random() * 30,         // y
-      (Math.random() - 0.5) * 100 // z
+      (Math.random() - 0.5) * 100,
+      Math.random() * 30,
+      (Math.random() - 0.5) * 100
     );
   }
-
   snowGeometry.setAttribute('position', new THREE.Float32BufferAttribute(snowPositions, 3));
   const snowMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
   const snow = new THREE.Points(snowGeometry, snowMaterial);
   scene.add(snow);
 
-  // Animate
+  // Raycaster for click detection
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  function onClick(event) {
+    // Convert mouse position to normalized device coordinates (-1 to +1)
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObject(registerButton);
+    if (intersects.length > 0) {
+      alert('Register button clicked!');
+    }
+  }
+
+  window.addEventListener('click', onClick, false);
+
+  // Animation loop
   function animate() {
     requestAnimationFrame(animate);
 
-    // Move snow
+    // Snow fall
     const pos = snowGeometry.attributes.position.array;
     for (let i = 1; i < pos.length; i += 3) {
       pos[i] -= 0.05;
-      if (pos[i] < -2) pos[i] = 20; // reset to top
+      if (pos[i] < -2) pos[i] = 20;
     }
     snowGeometry.attributes.position.needsUpdate = true;
 
@@ -100,9 +187,9 @@
 
   animate();
 
-  // Resize
+  // Responsive
   window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
