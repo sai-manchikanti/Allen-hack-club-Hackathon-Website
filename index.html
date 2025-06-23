@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hackathon Club 3D</title>
+  <title>3D Perspective Scene with Glowing Windows</title>
   <style>
     body {
       margin: 0;
@@ -14,7 +14,7 @@
       display: block;
       width: 100vw;
       height: 100vh;
-      cursor: pointer; /* pointer cursor for interactivity */
+      cursor: pointer;
     }
   </style>
 </head>
@@ -22,44 +22,24 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
-  // Scene setup
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#add8e6');
 
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 2, 10);
+  camera.position.set(0, 3, 10);
 
   const renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // Lighting
   const dirLight = new THREE.DirectionalLight(0xffffff, 1);
   dirLight.position.set(5, 10, 5);
   scene.add(dirLight);
 
-  // Add warm yellow lights near buildings to simulate windows
-  const buildingLights = [];
-  function addBuildingLight(x, y, z) {
-    const pointLight = new THREE.PointLight(0xffee88, 0.8, 10, 2);
-    pointLight.position.set(x, y, z);
-    scene.add(pointLight);
-    buildingLights.push(pointLight);
-  }
+  const ambientLight = new THREE.AmbientLight(0x666666);
+  scene.add(ambientLight);
 
-  // Buildings fading away on left and right
-  const buildingMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, flatShading: true });
-
-  function createBuilding(x, y, z, width, height, depth, opacity) {
-    const geometry = new THREE.BoxGeometry(width, height, depth);
-    const material = buildingMaterial.clone();
-    material.opacity = opacity;
-    material.transparent = opacity < 1;
-    const building = new THREE.Mesh(geometry, material);
-    building.position.set(x, y + height / 2, z);
-    return building;
-  }
-
+  // Buildings with glowing yellow windows (yellow squares + bigger transparent glow planes behind)
   const buildingCount = 12;
   const startZ = 0;
   const spacingZ = -6;
@@ -70,46 +50,119 @@
     const scale = 1 - i * 0.08;
     const opacity = 1 - i * 0.09;
 
-    // Left side buildings
-    const leftBuilding = createBuilding(
-      -5, 0, zPos,
-      2 * scale, baseHeight * scale, 4 * scale,
-      opacity
+    // Building
+    const buildingMaterial = new THREE.MeshStandardMaterial({
+      color: 0x444444,
+      flatShading: true,
+      transparent: true,
+      opacity: opacity,
+    });
+
+    // Left building
+    const leftBuilding = new THREE.Mesh(
+      new THREE.BoxGeometry(2 * scale, baseHeight * scale, 4 * scale),
+      buildingMaterial
     );
+    leftBuilding.position.set(-5, baseHeight * scale / 2, zPos);
     scene.add(leftBuilding);
-    // Add light near left buildings (somewhere middle height and front)
-    addBuildingLight(-5, baseHeight * scale * 0.7, zPos + 1);
 
-    // Right side buildings
-    const rightBuilding = createBuilding(
-      5, 0, zPos,
-      2 * scale, baseHeight * scale, 4 * scale,
-      opacity
+    // Right building
+    const rightBuilding = new THREE.Mesh(
+      new THREE.BoxGeometry(2 * scale, baseHeight * scale, 4 * scale),
+      buildingMaterial
     );
+    rightBuilding.position.set(5, baseHeight * scale / 2, zPos);
     scene.add(rightBuilding);
-    addBuildingLight(5, baseHeight * scale * 0.7, zPos + 1);
+
+    // Window sizes
+    const windowSize = 0.3 * scale;
+    const glowSize = windowSize * 2.5;
+    const windowsPerBuilding = 8;
+
+    // Helper: create glowing window (yellow square + glow plane behind)
+    function createGlowingWindow(x, y, z, rotationY) {
+      // Main bright yellow window
+      const windowMat = new THREE.MeshBasicMaterial({ color: 0xffee44 });
+      const windowGeo = new THREE.PlaneGeometry(windowSize, windowSize);
+      const windowMesh = new THREE.Mesh(windowGeo, windowMat);
+      windowMesh.position.set(x, y, z);
+      windowMesh.rotation.y = rotationY;
+      scene.add(windowMesh);
+
+      // Glow plane behind window (larger, transparent yellow, no lighting)
+      const glowMat = new THREE.MeshBasicMaterial({
+        color: 0xffee44,
+        transparent: true,
+        opacity: 0.3,
+        depthWrite: false,
+      });
+      const glowGeo = new THREE.PlaneGeometry(glowSize, glowSize);
+      const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+      glowMesh.position.set(x, y, z - 0.01 * Math.sign(rotationY)); // slightly behind window
+      glowMesh.rotation.y = rotationY;
+      scene.add(glowMesh);
+    }
+
+    // Left windows (front face = +z)
+    for (let w = 0; w < windowsPerBuilding; w++) {
+      const yPos = 0.3 + w * (windowSize + 0.05);
+      createGlowingWindow(
+        -5 + 1.01 * scale,
+        yPos,
+        zPos + 1,
+        -Math.PI / 2
+      );
+    }
+
+    // Right windows (front face = +z)
+    for (let w = 0; w < windowsPerBuilding; w++) {
+      const yPos = 0.3 + w * (windowSize + 0.05);
+      createGlowingWindow(
+        5 - 1.01 * scale,
+        yPos,
+        zPos + 1,
+        Math.PI / 2
+      );
+    }
   }
 
-  // Mountains aligned in one-point perspective (along z-axis, centered)
-  const mountainMaterial = new THREE.MeshStandardMaterial({ color: 0x888888, flatShading: true, transparent: true });
-  const mountainCount = 8;
-  for (let i = 0; i < mountainCount; i++) {
-    const geometry = new THREE.ConeGeometry(4, 7, 4);
-    const mountain = new THREE.Mesh(geometry, mountainMaterial.clone());
-    const zPos = -40 - i * 8;
-    mountain.position.set(0, -3, zPos);
-    // Fade mountains with distance
-    mountain.material.opacity = 1 - i * 0.1;
-    scene.add(mountain);
-  }
+  // Base platform below computer
+  const baseGeometry = new THREE.BoxGeometry(7, 0.5, 4);
+  const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+  const base = new THREE.Mesh(baseGeometry, baseMaterial);
+  base.position.set(0, -0.25, 0);
+  scene.add(base);
 
-  // Computer close
-  const computer = new THREE.Mesh(
-    new THREE.BoxGeometry(4, 2.5, 0.2),
-    new THREE.MeshStandardMaterial({ color: 0x222222 })
-  );
-  computer.position.set(0, 0, 0);
+  // Computer (screen)
+  const computerGeometry = new THREE.BoxGeometry(4, 2.5, 0.2);
+  const computerMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 });
+  const computer = new THREE.Mesh(computerGeometry, computerMaterial);
+  computer.position.set(0, 1.25, 0);
   scene.add(computer);
+
+  // Keyboard keys on base: small boxes arranged in rows
+  const keyRows = 3;
+  const keyCols = 8;
+  const keyWidth = 0.3;
+  const keyHeight = 0.1;
+  const keyDepth = 0.2;
+  const keySpacingX = 0.35;
+  const keySpacingY = 0.25;
+
+  for (let row = 0; row < keyRows; row++) {
+    for (let col = 0; col < keyCols; col++) {
+      const keyGeometry = new THREE.BoxGeometry(keyWidth, keyHeight, keyDepth);
+      const keyMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+      const key = new THREE.Mesh(keyGeometry, keyMaterial);
+
+      const xPos = - (keyCols / 2) * keySpacingX + col * keySpacingX + keySpacingX / 2;
+      const yPos = 0.3 + row * keySpacingY;
+      const zPos = 0.8;
+
+      key.position.set(xPos, yPos, zPos);
+      base.add(key);
+    }
+  }
 
   // Register Button - Canvas texture for text
   const buttonCanvas = document.createElement('canvas');
@@ -117,7 +170,6 @@
   buttonCanvas.height = 128;
   const ctx = buttonCanvas.getContext('2d');
 
-  // Draw button background with rounded corners
   function roundRect(ctx, x, y, width, height, radius) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
@@ -133,20 +185,18 @@
     ctx.fill();
   }
 
-  // Fill background - smaller button now
-  ctx.fillStyle = '#007bff'; // Bootstrap blue
+  ctx.fillStyle = '#007bff'; // blue button
   roundRect(ctx, 10, 10, 236, 108, 20);
 
-  // Button text
   ctx.font = 'bold 28px Arial';
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#fff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('Register Now', buttonCanvas.width / 2, buttonCanvas.height / 2);
 
   const buttonTexture = new THREE.CanvasTexture(buttonCanvas);
   const buttonMaterial = new THREE.MeshBasicMaterial({ map: buttonTexture, transparent: true });
-  const buttonGeometry = new THREE.PlaneGeometry(2, 1); // smaller size
+  const buttonGeometry = new THREE.PlaneGeometry(2, 1);
   const registerButton = new THREE.Mesh(buttonGeometry, buttonMaterial);
   registerButton.position.set(0, 0, 0.11);
   computer.add(registerButton);
@@ -167,7 +217,7 @@
   const snow = new THREE.Points(snowGeometry, snowMaterial);
   scene.add(snow);
 
-  // Raycaster for click detection
+  // Raycaster for button clicks
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
@@ -183,9 +233,9 @@
     }
   }
 
-  window.addEventListener('click', onClick, false);
+  window.addEventListener('click', onClick);
 
-  // Animation loop
+  // Animate
   function animate() {
     requestAnimationFrame(animate);
 
@@ -202,7 +252,7 @@
 
   animate();
 
-  // Responsive
+  // Resize
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
