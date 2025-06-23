@@ -1,286 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>3D Perspective Scene - No WebGL</title>
-<style>
-  /* Reset */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    background: #add8e6; /* baby blue */
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    perspective: 800px; /* Enable 3D perspective */
-    height: 100vh;
-    position: relative;
-  }
+  <meta charset="UTF-8" />
+  <title>One Point Perspective Buildings with Computer</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      height: 100%; width: 100%;
+      overflow: hidden;
+      background: #add8e6; /* baby blue */
+      font-family: Arial, sans-serif;
+      perspective: 1000px;
+      user-select: none;
+    }
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      perspective-origin: 50% 80%;
+    }
 
-  /* Snow container */
-  .snow {
-    pointer-events: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 10;
-  }
-  .snowflake {
-    position: absolute;
-    top: -10px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation-name: fall;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-  @keyframes fall {
-    0% { transform: translateY(0) translateX(0); opacity: 0.8; }
-    100% { transform: translateY(110vh) translateX(20px); opacity: 0; }
-  }
+    /* Buildings container */
+    .buildings {
+      position: absolute;
+      bottom: 50px;
+      height: 200px;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      transform-style: preserve-3d;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .buildings.left {
+      left: 20px;
+      transform: rotateY(15deg);
+      transform-origin: center right;
+    }
+    .buildings.right {
+      right: 20px;
+      transform: rotateY(-15deg);
+      transform-origin: center left;
+    }
 
-  /* Container for the whole scene */
-  .scene {
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    transform-style: preserve-3d;
-  }
+    /* Each building */
+    .building {
+      width: 60px;
+      background: #444;
+      border-radius: 6px 6px 0 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 10px;
+      box-shadow: 0 0 8px #000 inset;
+      transition: transform 0.3s ease;
+      position: relative;
+    }
 
-  /* Buildings container */
-  .buildings {
-    position: absolute;
-    top: 0; bottom: 0;
-    width: 40vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    pointer-events: none;
-  }
+    /* Windows container inside each building */
+    .windows {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 6px 8px 6px;
+    }
 
-  /* Left and right buildings containers */
-  .buildings.left {
-    left: 0;
-    transform-origin: right center;
-    transform: translateZ(-150px) rotateY(15deg);
-  }
-  .buildings.right {
-    right: 0;
-    transform-origin: left center;
-    transform: translateZ(-150px) rotateY(-15deg);
-  }
+    /* Windows */
+    .window {
+      width: 10px;
+      height: 14px;
+      background: #222;
+      border-radius: 2px;
+      box-shadow: inset 0 0 2px #000;
+      transition: background 0.3s ease;
+    }
+    .window.yellow-glow {
+      background: #ffeb3b;
+      box-shadow:
+        0 0 8px 2px #fff176,
+        0 0 12px 4px #fdd835;
+    }
 
-  /* Individual building */
-  .building {
-    background: #444;
-    border-radius: 6px 6px 0 0;
-    margin: 8px auto;
-    opacity: 0.9;
-    position: relative;
-  }
-  /* Buildings fade away with scale & opacity */
-  .buildings.left .building:nth-child(1) { height: 240px; width: 60px; transform: scale(1); opacity: 1; }
-  .buildings.left .building:nth-child(2) { height: 210px; width: 55px; transform: scale(0.9); opacity: 0.85; }
-  .buildings.left .building:nth-child(3) { height: 180px; width: 50px; transform: scale(0.8); opacity: 0.7; }
-  .buildings.left .building:nth-child(4) { height: 150px; width: 45px; transform: scale(0.7); opacity: 0.55; }
-  .buildings.left .building:nth-child(5) { height: 120px; width: 40px; transform: scale(0.6); opacity: 0.4; }
+    /* Different building depths for perspective */
+    .building[data-depth="0"] {
+      transform: translateZ(0px) scale(1);
+      opacity: 1;
+    }
+    .building[data-depth="1"] {
+      transform: translateZ(-50px) scale(0.85);
+      opacity: 0.8;
+    }
+    .building[data-depth="2"] {
+      transform: translateZ(-100px) scale(0.7);
+      opacity: 0.6;
+    }
+    .building[data-depth="3"] {
+      transform: translateZ(-150px) scale(0.55);
+      opacity: 0.4;
+    }
 
-  .buildings.right .building:nth-child(1) { height: 240px; width: 60px; transform: scale(1); opacity: 1; }
-  .buildings.right .building:nth-child(2) { height: 210px; width: 55px; transform: scale(0.9); opacity: 0.85; }
-  .buildings.right .building:nth-child(3) { height: 180px; width: 50px; transform: scale(0.8); opacity: 0.7; }
-  .buildings.right .building:nth-child(4) { height: 150px; width: 45px; transform: scale(0.7); opacity: 0.55; }
-  .buildings.right .building:nth-child(5) { height: 120px; width: 40px; transform: scale(0.6); opacity: 0.4; }
+    /* Computer in center */
+    .computer {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      background: #222;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #000 inset;
+      padding: 20px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
 
-  /* Windows on buildings - yellow squares with glow */
-  .window {
-    width: 12px;
-    height: 12px;
-    background: #ffea00;
-    margin: 4px auto;
-    border-radius: 2px;
-    box-shadow:
-      0 0 6px 2px #ffea00cc,
-      inset 0 0 3px 1px #ffea00ff;
-  }
+    /* Screen */
+    .screen {
+      width: 220px;
+      height: 120px;
+      background: #0047ab; /* dark blue screen */
+      border-radius: 8px;
+      box-shadow:
+        inset 0 0 10px #2a6ad3,
+        0 0 15px #2a6ad3;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s ease;
+    }
+    .screen:hover {
+      background: #005ce6;
+      box-shadow:
+        inset 0 0 15px #66a3ff,
+        0 0 25px #66a3ff;
+    }
 
-  /* Multiple windows stacked vertically */
-  .building .windows {
-    display: flex;
-    flex-direction: column;
-    margin-top: 15px;
-  }
+    /* Keyboard */
+    .keyboard {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 220px;
+      justify-content: center;
+    }
+    .key {
+      width: 30px;
+      height: 20px;
+      background: #333;
+      border-radius: 4px;
+      box-shadow: 0 0 5px #000 inset;
+      transition: box-shadow 0.3s ease;
+      user-select: none;
+    }
+    .key.yellow-glow {
+      background: #ffeb3b;
+      box-shadow:
+        0 0 8px 2px #fff176,
+        0 0 12px 4px #fdd835;
+    }
 
-  /* Computer container */
-  .computer {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform-style: preserve-3d;
-    transform: translateX(-50%) translateZ(100px);
-    width: 320px;
-    height: 220px;
-    background: #222;
-    border-radius: 10px;
-    box-shadow: 0 0 12px #000 inset;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 25px 20px;
-  }
+    /* Snow */
+    .snow {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 5;
+      overflow: visible;
+    }
+    .snowflake {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      filter: drop-shadow(0 0 2px white);
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(-10vh);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
 
-  /* Computer screen */
-  .screen {
-    width: 260px;
-    height: 140px;
-    background: #007bff;
-    border-radius: 8px;
-    position: relative;
-    box-shadow:
-      0 0 20px 4px #007bffcc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-weight: bold;
-    font-size: 20px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .screen:hover {
-    background: #0056b3;
-    box-shadow: 0 0 30px 6px #0056b3cc;
-  }
-
-  /* Keyboard base */
-  .keyboard {
-    margin-top: 18px;
-    width: 280px;
-    height: 30px;
-    background: #555;
-    border-radius: 6px;
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-gap: 6px;
-    padding: 4px 8px;
-    box-shadow: 0 0 8px #222 inset;
-  }
-
-  /* Keys */
-  .key {
-    background: #777;
-    border-radius: 4px;
-    box-shadow:
-      0 0 4px #ddd inset;
-  }
-  .key.yellow-glow {
-    background: #ffea00;
-    box-shadow:
-      0 0 10px 3px #ffea00cc,
-      inset 0 0 5px 2px #fff640;
-  }
-</style>
+  </style>
 </head>
 <body>
+  <div class="scene" role="main" aria-label="3D perspective scene with buildings and computer">
 
-<div class="scene">
+    <!-- Buildings Left -->
+    <div class="buildings left" aria-label="Buildings on left side">
+      <div class="building" data-depth="0">
+        <div class="windows">
+          <div class="window yellow-glow"></div>
+          <div class="window"></div>
+          <div class="window yellow-glow"></div>
+        </div>
+      </div>
+      <div class="building" data-depth="1">
+        <div class="windows">
+          <div class="window"></div>
+          <div class="window yellow-glow"></div>
+        </div>
+      </div>
+      <div class="building" data-depth="2">
+        <div class="windows">
+          <div class="window yellow-glow"></div>
+          <div class="window"></div>
+        </div>
+      </div>
+      <div class="building" data-depth="3">
+        <div class="windows">
+          <div class="window yellow-glow"></div>
+        </div>
+      </div>
+    </div>
 
- <!-- Buildings on left -->
-<div class="buildings left" aria-label="Buildings on left side">
-  <div class="building" style="transform: translateZ(0px) scale(1); opacity: 1;">
-    <div class="windows">
-      <div class="window"></div><div class="window yellow-glow"></div><div class="window"></div>
+    <!-- Buildings Right -->
+    <div class="buildings right" aria-label="Buildings on right side">
+      <div class="building" data-depth="0">
+        <div class="windows">
+          <div class="window"></div>
+          <div class="window yellow-glow"></div>
+          <div class="window"></div>
+        </div>
+      </div>
+      <div class="building" data-depth="1">
+        <div class="windows">
+          <div class="window yellow-glow"></div>
+          <div class="window"></div>
+        </div>
+      </div>
+      <div class="building" data-depth="2">
+        <div class="windows">
+          <div class="window"></div>
+          <div class="window yellow-glow"></div>
+        </div>
+      </div>
+      <div class="building" data-depth="3">
+        <div class="windows">
+          <div class="window"></div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="building" style="transform: translateZ(-50px) scale(0.85); opacity: 0.8;">
-    <div class="windows">
-      <div class="window yellow-glow"></div><div class="window"></div>
-    </div>
-  </div>
-  <div class="building" style="transform: translateZ(-100px) scale(0.7); opacity: 0.6;">
-    <div class="windows">
-      <div class="window"></div><div class="window yellow-glow"></div>
-    </div>
-  </div>
-  <div class="building" style="transform: translateZ(-150px) scale(0.55); opacity: 0.4;">
-    <div class="windows">
-      <div class="window yellow-glow"></div>
-    </div>
-  </div>
-</div>
 
-<!-- Buildings on right -->
-<div class="buildings right" aria-label="Buildings on right side">
-  <div class="building" style="transform: translateZ(0px) scale(1); opacity: 1;">
-    <div class="windows">
-      <div class="window yellow-glow"></div><div class="window"></div>
+    <!-- Computer -->
+    <div class="computer" role="region" aria-label="Computer with register button">
+      <div
+        class="screen"
+        role="button"
+        tabindex="0"
+        aria-pressed="false"
+        aria-label="Register Now button"
+        onclick="alert('Registered!')"
+        onkeypress="if(event.key==='Enter'){alert('Registered!');}"
+      >
+        Register Now
+      </div>
+      <div class="keyboard" aria-label="Keyboard keys">
+        <div class="key"></div>
+        <div class="key yellow-glow"></div>
+        <div class="key"></div>
+        <div class="key yellow-glow"></div>
+        <div class="key"></div>
+        <div class="key yellow-glow"></div>
+        <div class="key"></div>
+        <div class="key yellow-glow"></div>
+        <div class="key"></div>
+      </div>
     </div>
-  </div>
-  <div class="building" style="transform: translateZ(-50px) scale(0.85); opacity: 0.8;">
-    <div class="windows">
-      <div class="window"></div><div class="window yellow-glow"></div>
-    </div>
-  </div>
-  <div class="building" style="transform: translateZ(-100px) scale(0.7); opacity: 0.6;">
-    <div class="windows">
-      <div class="window yellow-glow"></div>
-    </div>
-  </div>
-  <div class="building" style="transform: translateZ(-150px) scale(0.55); opacity: 0.4;">
-    <div class="windows">
-      <div class="window"></div>
-    </div>
-  </div>
-</div>
 
-  <!-- Computer -->
-  <div class="computer" role="main" aria-label="Computer with register button">
-    <div class="screen" tabindex="0" role="button" aria-pressed="false" aria-label="Register Now button" onclick="alert('Registered!')">
-      Register Now
-    </div>
-    <div class="keyboard" aria-label="Keyboard keys">
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-      <div class="key"></div>
-      <div class="key yellow-glow"></div>
-    </div>
   </div>
 
-</div>
+  <!-- Snow container -->
+  <div class="snow" aria-hidden="true"></div>
 
-<!-- Snow container -->
-<div class="snow" aria-hidden="true"></div>
+  <script>
+    // Create falling snowflakes dynamically
+    const snowContainer = document.querySelector('.snow');
+    const flakesCount = 50;
 
-<script>
-  // Create falling snowflakes dynamically
-  const snowContainer = document.querySelector('.snow');
-  const flakesCount = 50;
-
-  for (let i = 0; i < flakesCount; i++) {
-    const flake = document.createElement('div');
-    flake.classList.add('snowflake');
-    // Random size 3-8px
-    const size = 3 + Math.random() * 5;
-    flake.style.width = size + 'px';
-    flake.style.height = size + 'px';
-    // Random horizontal start position (vw)
-    flake.style.left = Math.random() * 100 + 'vw';
-    // Random animation duration 5-12s
-    flake.style.animationDuration = (5 + Math.random() * 7) + 's';
-    // Random animation delay -10s to 0 to spread out start
-    flake.style.animationDelay = (-10 + Math.random() * 10) + 's';
-    snowContainer.appendChild(flake);
-  }
-</script>
-
+    for (let i = 0; i < flakesCount; i++) {
+      const flake = document.createElement('div');
+      flake.classList.add('snowflake');
+      const size = 3 + Math.random() * 5;
+      flake.style.width = size + 'px';
+      flake.style.height = size + 'px';
+      flake.style.left = Math.random() * 100 + 'vw';
+      flake.style.animationDuration = (5 + Math.random() * 7) + 's';
+      flake.style.animationDelay = (-10 + Math.random() * 10) + 's';
+      snowContainer.appendChild(flake);
+    }
+  </script>
 </body>
 </html>
