@@ -1,316 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>One Point Perspective Buildings with Computer</title>
+  <meta charset="UTF-8">
+  <title>New Year Hackathon - Firecracker Theme</title>
   <style>
-    /* Reset */
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
-    html, body {
-      height: 100%; width: 100%;
+    /* Base styles */
+    body {
+      margin: 0;
+      background-color: black;
+      font-family: 'Segoe UI', sans-serif;
       overflow: hidden;
-      background: #add8e6; /* baby blue */
-      font-family: Arial, sans-serif;
-      perspective: 1000px;
-      user-select: none;
-    }
-    .scene {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      transform-style: preserve-3d;
-      perspective-origin: 50% 80%;
-    }
-
-    /* Buildings container */
-    .buildings {
-      position: absolute;
-      bottom: 50px;
-      height: 200px;
-      display: flex;
-      align-items: flex-end;
-      gap: 12px;
-      transform-style: preserve-3d;
-      pointer-events: none;
-      z-index: 2;
-    }
-    .buildings.left {
-      left: 20px;
-      transform: rotateY(15deg);
-      transform-origin: center right;
-    }
-    .buildings.right {
-      right: 20px;
-      transform: rotateY(-15deg);
-      transform-origin: center left;
-    }
-
-    /* Each building */
-    .building {
-      width: 60px;
-      background: #444;
-      border-radius: 6px 6px 0 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      padding-top: 10px;
-      box-shadow: 0 0 8px #000 inset;
-      transition: transform 0.3s ease;
-      position: relative;
-    }
-
-    /* Windows container inside each building */
-    .windows {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
-      padding: 0 6px 8px 6px;
-    }
-
-    /* Windows */
-    .window {
-      width: 10px;
-      height: 14px;
-      background: #222;
-      border-radius: 2px;
-      box-shadow: inset 0 0 2px #000;
-      transition: background 0.3s ease;
-    }
-    .window.yellow-glow {
-      background: #ffeb3b;
-      box-shadow:
-        0 0 8px 2px #fff176,
-        0 0 12px 4px #fdd835;
-    }
-
-    /* Different building depths for perspective */
-    .building[data-depth="0"] {
-      transform: translateZ(0px) scale(1);
-      opacity: 1;
-    }
-    .building[data-depth="1"] {
-      transform: translateZ(-50px) scale(0.85);
-      opacity: 0.8;
-    }
-    .building[data-depth="2"] {
-      transform: translateZ(-100px) scale(0.7);
-      opacity: 0.6;
-    }
-    .building[data-depth="3"] {
-      transform: translateZ(-150px) scale(0.55);
-      opacity: 0.4;
-    }
-
-    /* Computer in center */
-    .computer {
-      position: absolute;
-      bottom: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 280px;
-      background: #222;
-      border-radius: 10px;
-      box-shadow: 0 0 15px #000 inset;
-      padding: 20px;
-      z-index: 3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      user-select: none;
-    }
-
-    /* Screen */
-    .screen {
-      width: 220px;
-      height: 120px;
-      background: #0047ab; /* dark blue screen */
-      border-radius: 8px;
-      box-shadow:
-        inset 0 0 10px #2a6ad3,
-        0 0 15px #2a6ad3;
       color: white;
-      font-size: 24px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.3s ease;
-    }
-    .screen:hover {
-      background: #005ce6;
-      box-shadow:
-        inset 0 0 15px #66a3ff,
-        0 0 25px #66a3ff;
     }
 
-    /* Keyboard */
-    .keyboard {
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      width: 220px;
-      justify-content: center;
-    }
-    .key {
-      width: 30px;
-      height: 20px;
-      background: #333;
-      border-radius: 4px;
-      box-shadow: 0 0 5px #000 inset;
-      transition: box-shadow 0.3s ease;
-      user-select: none;
-    }
-    .key.yellow-glow {
-      background: #ffeb3b;
-      box-shadow:
-        0 0 8px 2px #fff176,
-        0 0 12px 4px #fdd835;
+    h1, p {
+      text-align: center;
     }
 
-    /* Snow */
-    .snow {
-      pointer-events: none;
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      z-index: 5;
-      overflow: visible;
-    }
-    .snowflake {
+    .info {
       position: absolute;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation-name: fall;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      filter: drop-shadow(0 0 2px white);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
     }
-    @keyframes fall {
+
+    .info h1 {
+      font-size: 3em;
+      margin-bottom: 0.5em;
+    }
+
+    .info p {
+      font-size: 1.2em;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Firecracker animation container */
+    .firecracker {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: red;
+      animation: shoot 2s ease-out infinite;
+    }
+
+    /* From left */
+    .left {
+      left: 0;
+      bottom: 10%;
+      background: red;
+      animation-name: shootLeft;
+    }
+
+    /* From right */
+    .right {
+      right: 0;
+      bottom: 10%;
+      background: blue;
+      animation-name: shootRight;
+      animation-delay: 1s;
+    }
+
+    @keyframes shootLeft {
       0% {
-        transform: translateY(-10vh);
-        opacity: 0.8;
+        transform: translateX(0) translateY(0) scale(1);
+        opacity: 1;
+      }
+      70% {
+        transform: translateX(50vw) translateY(-40vh) scale(1.5);
+        opacity: 1;
       }
       100% {
-        transform: translateY(110vh);
+        transform: translateX(50vw) translateY(-40vh) scale(3);
         opacity: 0;
       }
     }
 
+    @keyframes shootRight {
+      0% {
+        transform: translateX(0) translateY(0) scale(1);
+        opacity: 1;
+      }
+      70% {
+        transform: translateX(-50vw) translateY(-40vh) scale(1.5);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-50vw) translateY(-40vh) scale(3);
+        opacity: 0;
+      }
+    }
+
+    /* Optional sparkle explosion */
+    .explosion {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: yellow;
+      border-radius: 50%;
+      opacity: 0;
+      animation: explode 2s infinite;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    @keyframes explode {
+      70% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      80% {
+        opacity: 1;
+        transform: scale(2);
+        background: orange;
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="scene" role="main" aria-label="3D perspective scene with buildings and computer">
 
-    <!-- Buildings Left -->
-    <div class="buildings left" aria-label="Buildings on left side">
-      <div class="building" data-depth="0">
-        <div class="windows">
-          <div class="window yellow-glow"></div>
-          <div class="window"></div>
-          <div class="window yellow-glow"></div>
-        </div>
-      </div>
-      <div class="building" data-depth="1">
-        <div class="windows">
-          <div class="window"></div>
-          <div class="window yellow-glow"></div>
-        </div>
-      </div>
-      <div class="building" data-depth="2">
-        <div class="windows">
-          <div class="window yellow-glow"></div>
-          <div class="window"></div>
-        </div>
-      </div>
-      <div class="building" data-depth="3">
-        <div class="windows">
-          <div class="window yellow-glow"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Buildings Right -->
-    <div class="buildings right" aria-label="Buildings on right side">
-      <div class="building" data-depth="0">
-        <div class="windows">
-          <div class="window"></div>
-          <div class="window yellow-glow"></div>
-          <div class="window"></div>
-        </div>
-      </div>
-      <div class="building" data-depth="1">
-        <div class="windows">
-          <div class="window yellow-glow"></div>
-          <div class="window"></div>
-        </div>
-      </div>
-      <div class="building" data-depth="2">
-        <div class="windows">
-          <div class="window"></div>
-          <div class="window yellow-glow"></div>
-        </div>
-      </div>
-      <div class="building" data-depth="3">
-        <div class="windows">
-          <div class="window"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Computer -->
-    <div class="computer" role="region" aria-label="Computer with register button">
-      <div
-        class="screen"
-        role="button"
-        tabindex="0"
-        aria-pressed="false"
-        aria-label="Register Now button"
-        onclick="alert('Registered!')"
-        onkeypress="if(event.key==='Enter'){alert('Registered!');}"
-      >
-        Register Now
-      </div>
-      <div class="keyboard" aria-label="Keyboard keys">
-        <div class="key"></div>
-        <div class="key yellow-glow"></div>
-        <div class="key"></div>
-        <div class="key yellow-glow"></div>
-        <div class="key"></div>
-        <div class="key yellow-glow"></div>
-        <div class="key"></div>
-        <div class="key yellow-glow"></div>
-        <div class="key"></div>
-      </div>
-    </div>
-
+  <!-- Info Section -->
+  <div class="info">
+    <h1>🔥 Firecracker Hackathon 2025 🎉</h1>
+    <p>Join us this New Year for an explosive coding and game-making event! Build cool projects, celebrate creativity, and start 2025 with a bang.</p>
   </div>
 
-  <!-- Snow container -->
-  <div class="snow" aria-hidden="true"></div>
+  <!-- Firecrackers -->
+  <div class="firecracker left"></div>
+  <div class="firecracker right"></div>
 
-  <script>
-    // Create falling snowflakes dynamically
-    const snowContainer = document.querySelector('.snow');
-    const flakesCount = 50;
+  <!-- Explosion in the middle -->
+  <div class="explosion"></div>
 
-    for (let i = 0; i < flakesCount; i++) {
-      const flake = document.createElement('div');
-      flake.classList.add('snowflake');
-      const size = 3 + Math.random() * 5;
-      flake.style.width = size + 'px';
-      flake.style.height = size + 'px';
-      flake.style.left = Math.random() * 100 + 'vw';
-      flake.style.animationDuration = (5 + Math.random() * 7) + 's';
-      flake.style.animationDelay = (-10 + Math.random() * 10) + 's';
-      snowContainer.appendChild(flake);
-    }
-  </script>
 </body>
 </html>
