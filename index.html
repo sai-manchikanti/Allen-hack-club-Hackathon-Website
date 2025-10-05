@@ -1,76 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Firecracker Hackathon</title>
   <style>
-    /* Global styles */
-    body {
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+    body {
       background-color: black;
       color: white;
       font-family: 'Segoe UI', sans-serif;
       overflow-x: hidden;
     }
 
-    h1, p {
-      text-align: center;
-    }
-
-    /* Firecracker animation at the top */
-    .fireworks {
-      position: relative;
-      height: 200px;
-      background: black;
-      overflow: hidden;
-    }
-
-    .firework {
+    /* Canvas Fullscreen */
+    #canvas {
       position: absolute;
-      bottom: 0;
-      width: 4px;
-      height: 80px;
-      background: red;
-      animation: launch 3s ease-in-out infinite;
+      top: 0;
+      left: 0;
+      z-index: 0;
     }
 
-    .firework::after {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: radial-gradient(circle, yellow, orange, red);
-      opacity: 0;
-      animation: explode 3s ease-in-out infinite;
-    }
-
-    .firework:nth-child(1) { left: 20%; animation-delay: 0s; }
-    .firework:nth-child(2) { left: 40%; animation-delay: 1s; }
-    .firework:nth-child(3) { left: 60%; animation-delay: 2s; }
-    .firework:nth-child(4) { left: 80%; animation-delay: 1.5s; }
-
-    @keyframes launch {
-      0% { bottom: 0; height: 80px; }
-      60% { bottom: 120px; height: 20px; }
-      70% { height: 0; }
-      100% { bottom: 0; height: 80px; }
-    }
-
-    @keyframes explode {
-      0%, 60% { opacity: 0; transform: scale(0.5); }
-      70% { opacity: 1; transform: scale(2); }
-      100% { opacity: 0; transform: scale(0.5); }
-    }
-
-    /* Event Info */
+    /* Intro Info */
     .info {
-      padding: 40px 20px;
+      position: relative;
+      z-index: 2;
+      padding: 100px 20px 60px;
       text-align: center;
-      z-index: 10;
     }
 
     .info h1 {
@@ -80,79 +40,75 @@
     .info p {
       font-size: 1.2em;
       max-width: 600px;
-      margin: 0 auto;
+      margin: 20px auto 0;
     }
 
-    /* Red paper banner */
-    .banner {
-      background: linear-gradient(to bottom, #a60000, #ff0000);
-      color: gold;
-      text-align: center;
-      font-size: 2em;
-      padding: 20px 0;
+    /* Unfolded Paper Section */
+    .paper {
+      position: relative;
+      z-index: 2;
       margin: 40px auto;
       width: 80%;
-      position: relative;
-      border: 4px solid gold;
+      background: linear-gradient(to bottom, #a60000, #ff1a1a);
+      padding: 60px 30px;
+      border: 6px double gold;
+      border-radius: 8px;
+      box-shadow: 0 0 20px gold;
+      color: gold;
+      font-size: 2em;
+      text-align: center;
     }
 
-    .banner::before,
-    .banner::after {
+    /* Golden Ribbons (corner decorations) */
+    .paper::before,
+    .paper::after {
       content: '';
       position: absolute;
-      top: 50%;
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       background: gold;
-      border-radius: 50%;
-      transform: translateY(-50%) rotate(45deg);
-      z-index: -1;
+      transform: rotate(45deg);
     }
 
-    .banner::before {
-      left: -20px;
+    .paper::before {
+      top: -15px;
+      left: -15px;
     }
 
-    .banner::after {
-      right: -20px;
+    .paper::after {
+      top: -15px;
+      right: -15px;
     }
 
-    /* Ribbon effect corners */
-    .ribbon {
+    .paper .bottom-ribbons::before,
+    .paper .bottom-ribbons::after {
+      content: '';
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 30px;
+      height: 30px;
       background: gold;
+      transform: rotate(45deg);
     }
 
-    .ribbon.tl {
-      top: -10px;
-      left: -10px;
+    .paper .bottom-ribbons::before {
+      bottom: -15px;
+      left: -15px;
     }
 
-    .ribbon.tr {
-      top: -10px;
-      right: -10px;
-    }
-
-    .ribbon.bl {
-      bottom: -10px;
-      left: -10px;
-    }
-
-    .ribbon.br {
-      bottom: -10px;
-      right: -10px;
+    .paper .bottom-ribbons::after {
+      bottom: -15px;
+      right: -15px;
     }
 
     /* Mission Path */
     .mission-path {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 60px;
-      padding: 60px 20px;
       position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 80px;
+      padding: 80px 20px;
     }
 
     .mission-path::before {
@@ -163,12 +119,12 @@
       width: 80%;
       height: 4px;
       background: red;
-      z-index: 0;
+      z-index: 1;
     }
 
     .mission {
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     .mission img {
@@ -178,7 +134,7 @@
       border: 3px solid white;
     }
 
-    /* Arrow/firecracker shape */
+    /* Arrow / Firecracker moving */
     .arrow {
       position: absolute;
       top: 50%;
@@ -188,58 +144,178 @@
       background: red;
       transform: translateY(-50%) rotate(45deg);
       animation: moveArrow 10s linear infinite;
-      z-index: 2;
+      z-index: 3;
     }
 
     @keyframes moveArrow {
       0% { left: 10%; }
       100% { left: 90%; }
     }
-
   </style>
 </head>
 <body>
 
-  <!-- Fireworks at the top -->
-  <div class="fireworks">
-    <div class="firework"></div>
-    <div class="firework"></div>
-    <div class="firework"></div>
-    <div class="firework"></div>
-  </div>
+  <!-- Firecracker Canvas -->
+  <canvas id="canvas"></canvas>
 
-  <!-- Event Info -->
+  <!-- Intro Section -->
   <div class="info">
-    <h1>🎆 Firecracker Jam 2025 🎉</h1>
-    <p>Join us this New Year for an explosive coding and game jam! Create, build, and celebrate with a bang!</p>
+    <h1>🔥 Firecracker Jam 2025 🎉</h1>
+    <p>Join us this New Year for an explosive coding and game-making event! Build cool projects, celebrate creativity, and start 2025 with a bang.</p>
   </div>
 
-  <!-- Red Paper Banner -->
-  <div class="banner">
+  <!-- Unfolded Paper Section -->
+  <div class="paper">
     type here
-    <div class="ribbon tl"></div>
-    <div class="ribbon tr"></div>
-    <div class="ribbon bl"></div>
-    <div class="ribbon br"></div>
+    <div class="bottom-ribbons"></div>
   </div>
 
-  <!-- Mission Path Section -->
+  <!-- Mission Path -->
   <div class="mission-path">
     <div class="arrow"></div>
 
     <div class="mission">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Snow_flake_icon.svg/1200px-Snow_flake_icon.svg.png" alt="Winter">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Snow_flake_icon.svg" alt="Winter">
     </div>
     <div class="mission">
       <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/Cherry_blossom_icon.png" alt="Spring">
     </div>
     <div class="mission">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Summer_icon.png/600px-Summer_icon.png" alt="Summer">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Summer_icon.png" alt="Summer">
     </div>
     <div class="mission">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Autumn_icon.svg/1024px-Autumn_icon.svg.png" alt="Fall">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Autumn_icon.svg" alt="Fall">
     </div>
   </div>
 
+  <!-- JavaScript for Firecracker Canvas -->
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    class Rocket {
+      constructor(fromLeft) {
+        this.fromLeft = fromLeft;
+        this.reset();
+      }
+
+      reset() {
+        this.x = this.fromLeft ? 0 : canvas.width;
+        this.y = canvas.height * 0.9;
+        this.targetX = canvas.width / 2 + random(-50, 50);
+        this.targetY = canvas.height * 0.2 + random(-40, 40);
+        this.speed = random(3, 5);
+        this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
+        this.vx = Math.cos(this.angle) * this.speed;
+        this.vy = Math.sin(this.angle) * this.speed;
+        this.exploded = false;
+        this.particles = [];
+      }
+
+      update() {
+        if (!this.exploded) {
+          this.x += this.vx;
+          this.y += this.vy;
+          const dx = this.targetX - this.x;
+          const dy = this.targetY - this.y;
+          if (dx * dx + dy * dy < 20 * 20) {
+            this.explode();
+          }
+        } else {
+          this.particles.forEach(p => p.update());
+          this.particles = this.particles.filter(p => !p.dead);
+          if (this.particles.length === 0) this.reset();
+        }
+      }
+
+      draw() {
+        if (!this.exploded) {
+          ctx.save();
+          ctx.fillStyle = 'white';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else {
+          this.particles.forEach(p => p.draw());
+        }
+      }
+
+      explode() {
+        this.exploded = true;
+        const count = 50 + Math.floor(random(0, 50));
+        for (let i = 0; i < count; i++) {
+          this.particles.push(new Particle(this.x, this.y));
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        const angle = random(0, Math.PI * 2);
+        const speed = random(1, 5);
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.decay = random(0.015, 0.03);
+        this.dead = false;
+        this.color = `hsl(${random(0, 360)}, 100%, 70%)`;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= this.decay;
+        if (this.alpha <= 0) {
+          this.dead = true;
+        }
+      }
+
+      draw() {
+        if (this.dead) return;
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const rockets = [];
+    function launchRocket() {
+      const fromLeft = Math.random() < 0.5;
+      rockets.push(new Rocket(fromLeft));
+    }
+
+    setInterval(launchRocket, 800);
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      rockets.forEach(r => {
+        r.update();
+        r.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>
