@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>New Year Hackathon - Firecracker Theme</title>
+  <meta charset="UTF-8" />
+  <title>Firecracker Launch Animation</title>
   <style>
-    /* Base styles */
     body {
       margin: 0;
-      background-color: black;
-      font-family: 'Segoe UI', sans-serif;
+      padding: 0;
       overflow: hidden;
+      background: black;
       color: white;
+      font-family: sans-serif;
     }
-
-    h1, p {
-      text-align: center;
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     .info {
@@ -23,122 +24,154 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 10;
+      text-align: center;
     }
-
     .info h1 {
       font-size: 3em;
       margin-bottom: 0.5em;
     }
-
     .info p {
       font-size: 1.2em;
       max-width: 600px;
       margin: 0 auto;
     }
-
-    /* Firecracker animation container */
-    .firecracker {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: red;
-      animation: shoot 2s ease-out infinite;
-    }
-
-    /* From left */
-    .left {
-      left: 0;
-      bottom: 10%;
-      background: red;
-      animation-name: shootLeft;
-    }
-
-    /* From right */
-    .right {
-      right: 0;
-      bottom: 10%;
-      background: blue;
-      animation-name: shootRight;
-      animation-delay: 1s;
-    }
-
-    @keyframes shootLeft {
-      0% {
-        transform: translateX(0) translateY(0) scale(1);
-        opacity: 1;
-      }
-      70% {
-        transform: translateX(50vw) translateY(-40vh) scale(1.5);
-        opacity: 1;
-      }
-      100% {
-        transform: translateX(50vw) translateY(-40vh) scale(3);
-        opacity: 0;
-      }
-    }
-
-    @keyframes shootRight {
-      0% {
-        transform: translateX(0) translateY(0) scale(1);
-        opacity: 1;
-      }
-      70% {
-        transform: translateX(-50vw) translateY(-40vh) scale(1.5);
-        opacity: 1;
-      }
-      100% {
-        transform: translateX(-50vw) translateY(-40vh) scale(3);
-        opacity: 0;
-      }
-    }
-
-    /* Optional sparkle explosion */
-    .explosion {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background: yellow;
-      border-radius: 50%;
-      opacity: 0;
-      animation: explode 2s infinite;
-      top: 20%;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1;
-    }
-
-    @keyframes explode {
-      70% {
-        opacity: 0;
-        transform: scale(0.5);
-      }
-      80% {
-        opacity: 1;
-        transform: scale(2);
-        background: orange;
-      }
-      100% {
-        opacity: 0;
-        transform: scale(0);
-      }
-    }
   </style>
 </head>
 <body>
-
-  <!-- Info Section -->
+  <canvas id="canvas"></canvas>
   <div class="info">
-    <h1>🔥 Firecracker Hackathon 2025 🎉</h1>
-    <p>Join us this New Year for an explosive coding and game-making event! Build cool projects, celebrate creativity, and start 2025 with a bang.</p>
+    <h1>Firecracker Jam 2025 🎆</h1>
+    <p>Launching from sides, popping in center. Let’s light up New Year with code!</p>
   </div>
 
-  <!-- Firecrackers -->
-  <div class="firecracker left"></div>
-  <div class="firecracker right"></div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-  <!-- Explosion in the middle -->
-  <div class="explosion"></div>
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
+    // Utility function
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    class Rocket {
+      constructor(fromLeft) {
+        this.fromLeft = fromLeft;
+        this.reset();
+      }
+      reset() {
+        this.x = this.fromLeft ? 0 : canvas.width;
+        this.y = canvas.height * 0.9;  // start near bottom
+        this.targetX = canvas.width / 2 + random(-50, 50);
+        this.targetY = canvas.height / 2 + random(-100, 100);
+        this.speed = random(3, 5);
+        this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
+        this.vx = Math.cos(this.angle) * this.speed;
+        this.vy = Math.sin(this.angle) * this.speed;
+        this.exploded = false;
+        this.particles = [];
+      }
+      update() {
+        if (!this.exploded) {
+          this.x += this.vx;
+          this.y += this.vy;
+          // Check if near target
+          const dx = this.targetX - this.x;
+          const dy = this.targetY - this.y;
+          if (dx * dx + dy * dy < 20 * 20) {
+            this.explode();
+          }
+        } else {
+          this.particles.forEach(p => p.update());
+          // remove dead particles
+          this.particles = this.particles.filter(p => !p.dead);
+          if (this.particles.length === 0) {
+            this.reset();
+          }
+        }
+      }
+      draw() {
+        if (!this.exploded) {
+          ctx.save();
+          ctx.fillStyle = 'white';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else {
+          this.particles.forEach(p => p.draw());
+        }
+      }
+      explode() {
+        this.exploded = true;
+        const count = 50 + Math.floor(random(0, 50));
+        for (let i = 0; i < count; i++) {
+          this.particles.push(new Particle(this.x, this.y));
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        const angle = random(0, Math.PI * 2);
+        const speed = random(1, 5);
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.decay = random(0.015, 0.03);
+        this.dead = false;
+        this.color = `hsl(${random(0, 360)}, 100%, 70%)`;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= this.decay;
+        if (this.alpha <= 0) {
+          this.dead = true;
+        }
+      }
+      draw() {
+        if (this.dead) return;
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Create rockets alternating from left & right
+    const rockets = [];
+    function launchRocket() {
+      const fromLeft = Math.random() < 0.5;
+      rockets.push(new Rocket(fromLeft));
+    }
+
+    // Launch periodically
+    setInterval(launchRocket, 800);
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';  // slight trail effect
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      rockets.forEach(r => {
+        r.update();
+        r.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>
