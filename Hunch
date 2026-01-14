@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Aid | NASA HUNCH Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS VARIABLES FOR EASY COLOR CHANGING --- */
+        :root {
+            --bg-deep: #050714;
+            --bg-accent: #0f1225;
+            --primary-glow: #00d4ff; /* Cyan */
+            --secondary-glow: #7b2cbf; /* Purple */
+            --text-main: #ffffff;
+            --text-muted: #a0a0c0;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- GLOBAL RESET & TYPOGRAPHY --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Exo 2', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .logo {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- BACKGROUND EFFECT --- */
+        /* Simulates a deep space nebula */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(58, 12, 163, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.2) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(5, 7, 20, 0.8);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .logo span { color: var(--primary-glow); }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-glow);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, var(--primary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .cta-button {
+            padding: 15px 40px;
+            background: linear-gradient(45deg, var(--secondary-glow), #480ca8);
+            border: none;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(123, 44, 191, 0.5);
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(123, 44, 191, 0.8);
+        }
+
+        /* --- MISSION SECTION --- */
+        .mission {
+            padding: 80px 10%;
+            background: var(--bg-accent);
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .mission-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .mission-visual {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--glass-border), transparent);
+            border: 1px solid var(--primary-glow);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Simulating a hologram circle */
+        .hologram {
+            width: 150px;
+            height: 150px;
+            border: 2px solid var(--primary-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--primary-glow), inset 0 0 20px var(--primary-glow);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .accent-text {
+            color: var(--primary-glow);
+            font-weight: bold;
+        }
+
+        /* --- FEATURES GRID --- */
+        .features {
+            padding: 80px 10%;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 15px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--primary-glow);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card i {
+            font-size: 2.5rem;
+            color: var(--primary-glow);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            nav { flex-direction: column; gap: 15px; padding: 20px; }
+            .nav-links a { margin: 0 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">ASTRO <span>AID</span></div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#mission">Mission</a>
+            <a href="#system">The System</a>
+            <a href="#team">Team</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        
+        <h1>Diagnostics for the <br>Final Frontier</h1>
+        <p>A NASA HUNCH Project designed to revolutionize astronaut health monitoring through autonomous AI diagnostics and real-time biometric analysis.</p>
+        <a href="#mission" class="cta-button">Explore The Mission</a>
+    </section>
+
+    <section class="mission" id="mission">
+        <div class="mission-visual">
+            <div class="hologram"></div>
+            </div>
+        <div class="mission-content">
+            <h2>Our Objective</h2>
+            <p>Space travel presents unique challenges to the human body. As we push towards Mars and beyond, astronauts need medical independence.</p>
+            <br>
+            <p><span class="accent-text">Astro Aid</span> is an integrated hardware and software solution developed by high school students for the <span class="accent-text">NASA HUNCH</span> program. Our goal is to create a lightweight, intuitive diagnostic tool that assists crew members in identifying medical anomalies without immediate ground support.</p>
+        </div>
+    </section>
+
+    <section class="features" id="system">
+        <h2>System Capabilities</h2>
+        <div class="grid-container">
+            <div class="card">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <h3>Vitals Monitoring</h3>
+                <p>Real-time tracking of heart rate, oxygen saturation, and blood pressure using non-invasive sensors adapted for microgravity environments.</p>
+            </div>
+
+            <div class="card">
+                <i class="fa-solid fa-brain"></i>
+                <h3>AI Analysis</h3>
+                <p>On-board machine learning algorithms compare astronaut data against baseline health metrics to predict potential health risks before they become critical.</p>
+            </div>
+
+            <div class="card">
+                <i class="fa-solid fa-user-astronaut"></i>
+                <h3>Crew Independence</h3>
+                <p>Designed for deep space missions with significant communication delays, allowing the crew to make informed medical decisions autonomously.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Astro Aid Project. All Rights Reserved.</p>
+        <p>Created for the NASA HUNCH Program.</p>
+    </footer>
+
+</body>
+</html>
