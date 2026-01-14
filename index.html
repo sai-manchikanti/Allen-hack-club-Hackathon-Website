@@ -1,424 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Firecracker Jam 2025</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro Aid | NASA HUNCH Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS VARIABLES FOR EASY COLOR CHANGING --- */
+        :root {
+            --bg-deep: #050714;
+            --bg-accent: #0f1225;
+            --primary-glow: #00d4ff; /* Cyan */
+            --secondary-glow: #7b2cbf; /* Purple */
+            --text-main: #ffffff;
+            --text-muted: #a0a0c0;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-    body {
-      background-color: black;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-    }
+        /* --- GLOBAL RESET & TYPOGRAPHY --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Exo 2', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-    /* Intro Section */
-    .info {
-      position: relative;
-      z-index: 2;
-      padding: 100px 20px 60px;
-      text-align: center;
-    }
+        h1, h2, h3, .logo {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-    .info h1 {
-      font-size: 3em;
-    }
+        /* --- BACKGROUND EFFECT --- */
+        /* Simulates a deep space nebula */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(58, 12, 163, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.2) 0%, transparent 40%);
+            z-index: -1;
+        }
 
-    .info p {
-      font-size: 1.2em;
-      max-width: 600px;
-      margin: 20px auto 0;
-    }
+        /* --- NAVIGATION --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(5, 7, 20, 0.8);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
+        }
 
-    /* Letter Section - Folded Red & Gold Paper Style */
-    .letter {
-      position: relative;
-      max-width: 800px;
-      margin: 60px auto;
-      padding: 60px 50px 50px 70px;
-      background: #b22222; /* Firebrick red */
-      color: #fff3d4;
-      font-size: 1.2em;
-      line-height: 1.6;
-      font-family: 'Georgia', serif;
-      border-radius: 15px;
-      box-shadow:
-        inset 0 5px 10px rgba(255, 215, 0, 0.8),
-        0 0 20px rgba(255, 140, 0, 0.8);
-      z-index: 2;
-      overflow: visible;
-      transform-style: preserve-3d;
-      perspective: 600px;
-    }
-    /* Gold folded corners */
-    .letter::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 70px;
-      height: 100%;
-      background: linear-gradient(135deg,
-        #b22222 30%,
-        #ffd700 35%,
-        #b8860b 50%,
-        #b22222 60%);
-      clip-path: polygon(0 0, 100% 0, 80% 100%, 0% 100%);
-      box-shadow: inset -3px 0 6px rgba(0,0,0,0.3);
-      transform-origin: left center;
-      transform: skewY(-20deg);
-      z-index: 10;
-    }
-    /* Fold shadow */
-    .letter::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 60px;
-      width: 10px;
-      height: 100%;
-      background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 215, 0, 0.4),
-        transparent);
-      filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.7));
-      transform-origin: left center;
-      transform: skewY(-20deg);
-      z-index: 20;
-      pointer-events: none;
-    }
-    .letter h2 {
-      font-size: 2em;
-      margin-bottom: 20px;
-      font-weight: bold;
-      text-shadow:
-        0 0 3px #ffd700,
-        0 0 5px #ffa500;
-      color: #ffecb3;
-    }
-    .letter p {
-      margin-bottom: 1em;
-      text-shadow: 0 0 2px #ffa500;
-    }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
 
-    /* Mission Section */
-    .mission-section {
-      position: relative;
-      z-index: 2;
-      background: #111;
-      padding: 100px 20px 150px;
-      overflow: visible;
-    }
+        .logo span { color: var(--primary-glow); }
 
-    .missions {
-      max-width: 600px;
-      margin: 0 auto;
-      position: relative;
-      padding-left: 80px;
-      border-left: 6px dashed gold;
-      border-image: linear-gradient(135deg, #ffd700, #b8860b, #ffd700) 1;
-      transform: skewY(-20deg);
-      transform-origin: top left;
-    }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
 
-    .mission {
-      margin-bottom: 120px;
-      position: relative;
-      transform: skewY(20deg);
-    }
+        .nav-links a:hover {
+            color: var(--primary-glow);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
 
-    .mission h3 {
-      color: gold;
-      font-size: 1.5em;
-      margin-bottom: 10px;
-      text-shadow: 0 0 5px #ffd700;
-    }
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
 
-    .mission p {
-      color: #ccc;
-      font-size: 1em;
-      text-shadow: 0 0 2px #b8860b;
-    }
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, var(--primary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
 
-    /* Arrow on dashed line */
-    .missions::before {
-      content: "";
-      position: absolute;
-      left: -52px;
-      top: 0;
-      width: 36px;
-      height: 36px;
-      background: gold;
-      clip-path: polygon(20% 0%, 100% 50%, 20% 100%);
-      filter: drop-shadow(0 0 5px #ffa500);
-      transform-origin: center;
-      transform: rotate(45deg) skewY(-20deg);
-      z-index: 5;
-    }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
 
-    /* Paper plane SVG */
-    .paper-plane {
-      position: absolute;
-      left: -70px;
-      width: 40px;
-      height: 40px;
-      fill: gold;
-      filter: drop-shadow(0 0 3px #ffa500);
-      transform-origin: center;
-      transform: skewY(-20deg);
-      transition: top 0.3s ease-out;
-      z-index: 6;
-    }
+        .cta-button {
+            padding: 15px 40px;
+            background: linear-gradient(45deg, var(--secondary-glow), #480ca8);
+            border: none;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(123, 44, 191, 0.5);
+            text-decoration: none;
+        }
 
-    @keyframes pulse {
-      0%, 100% { transform: rotate(45deg) skewY(-20deg) scale(1); }
-      50% { transform: rotate(45deg) skewY(-20deg) scale(1.3); }
-    }
-  </style>
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(123, 44, 191, 0.8);
+        }
+
+        /* --- MISSION SECTION --- */
+        .mission {
+            padding: 80px 10%;
+            background: var(--bg-accent);
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .mission-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .mission-visual {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--glass-border), transparent);
+            border: 1px solid var(--primary-glow);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Simulating a hologram circle */
+        .hologram {
+            width: 150px;
+            height: 150px;
+            border: 2px solid var(--primary-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--primary-glow), inset 0 0 20px var(--primary-glow);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .accent-text {
+            color: var(--primary-glow);
+            font-weight: bold;
+        }
+
+        /* --- FEATURES GRID --- */
+        .features {
+            padding: 80px 10%;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 15px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--primary-glow);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card i {
+            font-size: 2.5rem;
+            color: var(--primary-glow);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            nav { flex-direction: column; gap: 15px; padding: 20px; }
+            .nav-links a { margin: 0 10px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- Firecracker Canvas -->
-<canvas id="canvas"></canvas>
+    <nav>
+        <div class="logo">ASTRO <span>AID</span></div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#mission">Mission</a>
+            <a href="#system">The System</a>
+            <a href="#team">Team</a>
+        </div>
+    </nav>
 
-<!-- Intro -->
-<div class="info">
-  <h1>🔥 Firecracker Jam 2025 🎉</h1>
-  <p>Join us this New Year for an explosive coding and game-making event! Build cool projects, celebrate creativity, and start 2025 with a bang.</p>
-</div>
+    <section class="hero" id="home">
+        
+        <h1>Diagnostics for the <br>Final Frontier</h1>
+        <p>A NASA HUNCH Project designed to revolutionize astronaut health monitoring through autonomous AI diagnostics and real-time biometric analysis.</p>
+        <a href="#mission" class="cta-button">Explore The Mission</a>
+    </section>
 
-<!-- Letter Section -->
-<div class="letter">
-  <h2>Dear hackers, musicians, and artists,</h2>
-  <p>Welcome to Firecracker Jam 2025. This is your moment to light up the sky with your creativity and code. Whether you build games, apps, music, or art, your spark will add to the celebration.</p>
-  <p>Let’s collaborate, innovate, and fill the new year with dazzling projects and boundless joy. Shine bright and keep dreaming.</p>
-  <p>Warm wishes,<br>The Firecracker Jam Team</p>
-</div>
+    <section class="mission" id="mission">
+        <div class="mission-visual">
+            <div class="hologram"></div>
+            </div>
+        <div class="mission-content">
+            <h2>Our Objective</h2>
+            <p>Space travel presents unique challenges to the human body. As we push towards Mars and beyond, astronauts need medical independence.</p>
+            <br>
+            <p><span class="accent-text">Astro Aid</span> is an integrated hardware and software solution developed by high school students for the <span class="accent-text">NASA HUNCH</span> program. Our goal is to create a lightweight, intuitive diagnostic tool that assists crew members in identifying medical anomalies without immediate ground support.</p>
+        </div>
+    </section>
 
-<!-- Mission Section -->
-<section class="mission-section">
-  <div class="missions" id="missions">
-    <div class="paper-plane" id="paperPlane" style="top: 20px;" aria-hidden="true">
-      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" >
-        <path d="M2 32l60-24L26 34l20 6-44 4z" />
-      </svg>
-    </div>
-    <div class="mission">
-      <h3>❄️ Winter</h3>
-      <p>Cozy challenges to warm your code and your heart through chilly nights.</p>
-    </div>
-    <div class="mission">
-      <h3>🌸 Spring</h3>
-      <p>Fresh starts bloom here. New ideas, fresh energy, and the chance to grow.</p>
-    </div>
-    <div class="mission">
-      <h3>☀️ Summer</h3>
-      <p>Heat up your code and cool down with creativity. The sun is shining on your projects.</p>
-    </div>
-    <div class="mission">
-      <h3>🍂 Fall</h3>
-      <p>Harvest your year of effort. Celebrate the warmth and gold before the quiet comes.</p>
-    </div>
-  </div>
-</section>
+    <section class="features" id="system">
+        <h2>System Capabilities</h2>
+        <div class="grid-container">
+            <div class="card">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <h3>Vitals Monitoring</h3>
+                <p>Real-time tracking of heart rate, oxygen saturation, and blood pressure using non-invasive sensors adapted for microgravity environments.</p>
+            </div>
 
-<!-- Firecracker Animation JS (unchanged) -->
-<script>
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
+            <div class="card">
+                <i class="fa-solid fa-brain"></i>
+                <h3>AI Analysis</h3>
+                <p>On-board machine learning algorithms compare astronaut data against baseline health metrics to predict potential health risks before they become critical.</p>
+            </div>
 
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
+            <div class="card">
+                <i class="fa-solid fa-user-astronaut"></i>
+                <h3>Crew Independence</h3>
+                <p>Designed for deep space missions with significant communication delays, allowing the crew to make informed medical decisions autonomously.</p>
+            </div>
+        </div>
+    </section>
 
-  window.addEventListener('resize', resize);
-  resize();
-
-  function random(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  class Rocket {
-    constructor(fromLeft) {
-      this.fromLeft = fromLeft;
-      this.reset();
-    }
-
-    reset() {
-      this.x = this.fromLeft ? 0 : canvas.width;
-      this.y = canvas.height * 0.9;
-      this.targetX = canvas.width / 2 + random(-50, 50);
-      this.targetY = canvas.height * 0.2 + random(-40, 40);
-      this.speed = random(3, 5);
-      this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
-      this.vx = Math.cos(this.angle) * this.speed;
-      this.vy = Math.sin(this.angle) * this.speed;
-      this.exploded = false;
-      this.particles = [];
-    }
-
-    update() {
-      if (!this.exploded) {
-        this.x += this.vx;
-        this.y += this.vy;
-        const dx = this.targetX - this.x;
-        const dy = this.targetY - this.y;
-        if (dx * dx + dy * dy < 20 * 20) {
-          this.explode();
-        }
-      } else {
-        this.particles.forEach(p => p.update());
-        this.particles = this.particles.filter(p => !p.dead);
-        if (this.particles.length === 0) this.reset();
-      }
-    }
-
-    draw() {
-      if (!this.exploded) {
-        ctx.save();
-        ctx.fillStyle = 'white';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      } else {
-        this.particles.forEach(p => p.draw());
-      }
-    }
-
-    explode() {
-      this.exploded = true;
-      const count = 50 + Math.floor(random(0, 50));
-      for (let i = 0; i < count; i++) {
-        this.particles.push(new Particle(this.x, this.y));
-      }
-    }
-  }
-
-  class Particle {
-    constructor(x, y) {
-      this.x = x;
-      this.y = y;
-      const angle = random(0, Math.PI * 2);
-      const speed = random(1, 5);
-      this.vx = Math.cos(angle) * speed;
-      this.vy = Math.sin(angle) * speed;
-      this.alpha = 1;
-      this.decay = random(0.015, 0.03);
-      this.dead = false;
-      this.color = `hsl(${random(0, 360)}, 100%, 70%)`;
-    }
-
-    update() {
-      this.x += this.vx;
-      this.y += this.vy;
-      this.alpha -= this.decay;
-      if (this.alpha <= 0) {
-        this.dead = true;
-      }
-    }
-
-    draw() {
-      if (this.dead) return;
-      ctx.save();
-      ctx.globalAlpha = this.alpha;
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-  }
-
-  const rockets = [];
-  function launchRocket() {
-    const fromLeft = Math.random() < 0.5;
-    rockets.push(new Rocket(fromLeft));
-  }
-
-  setInterval(launchRocket, 800);
-
-  function animate() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    rockets.forEach(r => {
-      r.update();
-      r.draw();
-    });
-
-    requestAnimationFrame(animate);
-  }
-
-  animate();
-
-  // Scroll-linked paper plane movement
-  const paperPlane = document.getElementById('paperPlane');
-  const missions = document.getElementById('missions');
-  const missionElems = document.querySelectorAll('.mission');
-
-  // Calculate Y positions of missions relative to viewport
-  function updatePlanePosition() {
-    const scrollY = window.scrollY;
-    const viewportHeight = window.innerHeight;
-
-    // Get missions' vertical center positions relative to the document
-    const positions = Array.from(missionElems).map(mission => {
-      const rect = mission.getBoundingClientRect();
-      // position relative to viewport top + current scroll
-      return rect.top + scrollY + rect.height / 2;
-    });
-
-    // Current scroll + viewport center
-    const scrollCenter = scrollY + viewportHeight / 2;
-
-    // Find which two missions the scrollCenter is between
-    let index = 0;
-    for (let i = 0; i < positions.length - 1; i++) {
-      if (scrollCenter >= positions[i] && scrollCenter < positions[i+1]) {
-        index = i;
-        break;
-      }
-      if(scrollCenter < positions[0]) index = 0;
-      if(scrollCenter >= positions[positions.length-1]) index = positions.length - 2;
-    }
-
-    // Linear interpolate between two mission positions for smooth vertical movement
-    const start = positions[index];
-    const end = positions[index+1];
-    const progress = (scrollCenter - start) / (end - start);
-
-    // missions container is skewed -20deg, paper plane top must compensate skew
-    // The missions padding-left is 80px, paper plane left is -70px so it aligns nicely
-
-    // We'll map the progress to paper plane top positions relative to the missions container
-    // Let’s find mission relative Y in missions container
-    const missionsRect = missions.getBoundingClientRect();
-    const startRelative = start - missionsRect.top - window.scrollY;
-    const endRelative = end - missionsRect.top - window.scrollY;
-    const planeTop = startRelative + progress * (endRelative - startRelative);
-
-    paperPlane.style.top = planeTop + "px";
-  }
-
-  window.addEventListener('scroll', updatePlanePosition);
-  window.addEventListener('resize', updatePlanePosition);
-  updatePlanePosition();
-
-</script>
+    <footer>
+        <p>&copy; 2024 Astro Aid Project. All Rights Reserved.</p>
+        <p>Created for the NASA HUNCH Program.</p>
+    </footer>
 
 </body>
 </html>
