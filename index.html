@@ -8,25 +8,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* --- CSS VARIABLES FOR EASY COLOR CHANGING --- */
         :root {
             --bg-deep: #050714;
             --bg-accent: #0f1225;
-            --primary-glow: #00d4ff; /* Cyan */
-            --secondary-glow: #7b2cbf; /* Purple */
+            --primary-glow: #00d4ff;
+            --secondary-glow: #7b2cbf;
             --text-main: #ffffff;
             --text-muted: #a0a0c0;
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
         }
 
-        /* --- GLOBAL RESET & TYPOGRAPHY --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
@@ -35,14 +28,8 @@
             line-height: 1.6;
         }
 
-        h1, h2, h3, .logo {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* --- BACKGROUND EFFECT --- */
-        /* Simulates a deep space nebula */
         body::before {
             content: '';
             position: fixed;
@@ -50,11 +37,10 @@
             width: 100%; height: 100%;
             background: 
                 radial-gradient(circle at 10% 20%, rgba(58, 12, 163, 0.4) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.2) 0%, transparent 40%);
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.2) 0% , transparent 40%);
             z-index: -1;
         }
 
-        /* --- NAVIGATION --- */
         nav {
             display: flex;
             justify-content: space-between;
@@ -68,29 +54,11 @@
             border-bottom: 1px solid var(--glass-border);
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--text-main);
-            text-shadow: 0 0 10px var(--primary-glow);
-        }
-
+        .logo { font-size: 1.5rem; font-weight: 900; text-shadow: 0 0 10px var(--primary-glow); }
         .logo span { color: var(--primary-glow); }
+        .nav-links a { color: var(--text-muted); text-decoration: none; margin-left: 30px; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary-glow); text-shadow: 0 0 8px var(--primary-glow); }
 
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            margin-left: 30px;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-glow);
-            text-shadow: 0 0 8px var(--primary-glow);
-        }
-
-        /* --- HERO SECTION --- */
         .hero {
             height: 100vh;
             display: flex;
@@ -99,162 +67,47 @@
             align-items: center;
             text-align: center;
             padding: 0 20px;
-            position: relative;
         }
 
         .hero h1 {
             font-size: 4rem;
-            margin-bottom: 20px;
             background: linear-gradient(90deg, #fff, var(--primary-glow));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
         }
 
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin-bottom: 40px;
-        }
-
-        .cta-button {
-            padding: 15px 40px;
-            background: linear-gradient(45deg, var(--secondary-glow), #480ca8);
-            border: none;
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            border-radius: 50px;
-            transition: 0.3s;
-            box-shadow: 0 0 20px rgba(123, 44, 191, 0.5);
-            text-decoration: none;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 30px rgba(123, 44, 191, 0.8);
-        }
-
-        /* --- MISSION SECTION --- */
-        .mission {
-            padding: 80px 10%;
-            background: var(--bg-accent);
-            display: flex;
-            align-items: center;
-            gap: 50px;
-            flex-wrap: wrap;
-        }
-
-        .mission-content {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .mission-visual {
-            flex: 1;
-            min-width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, var(--glass-border), transparent);
-            border: 1px solid var(--primary-glow);
+        /* --- CONTENT SECTIONS --- */
+        section { padding: 100px 10%; }
+        h2 { font-size: 2.5rem; margin-bottom: 30px; color: var(--primary-glow); text-align: center; }
+        
+        .content-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
             border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+            margin-bottom: 30px;
         }
 
-        /* Simulating a hologram circle */
-        .hologram {
-            width: 150px;
-            height: 150px;
-            border: 2px solid var(--primary-glow);
-            border-radius: 50%;
-            box-shadow: 0 0 20px var(--primary-glow), inset 0 0 20px var(--primary-glow);
-            animation: pulse 3s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.5; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.5; transform: scale(0.9); }
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: var(--text-main);
-        }
-
-        .accent-text {
+        ul { list-style: none; }
+        li { margin-bottom: 15px; position: relative; padding-left: 25px; color: var(--text-muted); }
+        li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
             color: var(--primary-glow);
             font-weight: bold;
         }
 
-        /* --- FEATURES GRID --- */
-        .features {
-            padding: 80px 10%;
-        }
+        .accent { color: var(--primary-glow); font-weight: bold; }
 
-        .features h2 {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .grid-container {
+        /* --- TECHNOLOGY GRID --- */
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 30px;
-            border-radius: 15px;
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            border-color: var(--primary-glow);
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .card i {
-            font-size: 2.5rem;
-            color: var(--primary-glow);
-            margin-bottom: 20px;
-        }
-
-        .card h3 {
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        /* --- FOOTER --- */
-        footer {
-            text-align: center;
-            padding: 40px;
-            border-top: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* --- RESPONSIVE ADJUSTMENTS --- */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            nav { flex-direction: column; gap: 15px; padding: 20px; }
-            .nav-links a { margin: 0 10px; }
-        }
+        footer { text-align: center; padding: 40px; border-top: 1px solid var(--glass-border); color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -270,45 +123,81 @@
     </nav>
 
     <section class="hero" id="home">
-        
-        <h1> ASTRO AID </h1>
-        <p>An AI Medical Assistant </p>
-        <a href="#mission" class="cta-button">Explore The Mission</a>
-    </section>
-
-    <section class="mission" id="mission">
-        <div class="mission-visual">
-            <div class="hologram"></div>
-            </div>
-        <div class="mission-content">
-            <h2>Our Objective</h2>
-            <p>Space travel presents unique challenges to the human body. As we push towards Mars and beyond, astronauts need medical independence.</p>
-            <br>
-            <p><span class="accent-text">Astro Aid</span> is an integrated hardware and software solution developed by high school students for the <span class="accent-text">NASA HUNCH</span> program. Our goal is to create a lightweight, intuitive diagnostic tool that assists crew members in identifying medical anomalies without immediate ground support.</p>
+        <h1>ASTRO AID</h1>
+        <p style="font-size: 1.5rem; margin-top: 10px;">The 24/7 AI Medical Assistant for Deep Space</p>
+        <div class="content-box" style="margin-top: 40px; max-width: 800px; text-align: left;">
+            <p>Our main goal is to assist Astronauts on long-duration missions to obtain critical medical diagnosis and advice.</p>
+            <ul style="margin-top: 20px;">
+                <li><span class="accent">Always Available:</span> Provides medical guidance 7 days a week, 24 hours a day.</li>
+                <li><span class="accent">Evolving Intelligence:</span> Our AI learns from cases and is trained to provide detailed solutions for most medical scenarios.</li>
+                <li><span class="accent">Impact:</span> Demonstrating the power of AI to bridge healthcare gaps between Earth and the stars.</li>
+            </ul>
         </div>
     </section>
 
-    <section class="features" id="technology">
-        <h2>System Capabilities</h2>
-        <div class="grid-container">
-            <div class="card">
-                <i class="fa-solid fa-heart-pulse"></i>
-                <h3>Vitals Monitoring</h3>
-                <p>Real-time tracking of heart rate, oxygen saturation, and blood pressure using non-invasive sensors adapted for microgravity environments.</p>
+    <section id="mission">
+        <h2>The Mission</h2>
+        <div class="grid">
+            <div class="content-box">
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> The Problem</h3>
+                <p>Astronauts face extreme isolation and communication delays:</p>
+                <ul>
+                    <li>No doctors on board for deep space transit.</li>
+                    <li>Communication blackouts lasting up to <span class="accent">2 weeks</span>.</li>
+                    <li>Real-time consultation with Earth is often impractical.</li>
+                </ul>
             </div>
-
-            <div class="card">
-                <i class="fa-solid fa-brain"></i>
-                <h3>AI Analysis</h3>
-                <p>On-board machine learning algorithms compare astronaut data against baseline health metrics to predict potential health risks before they become critical.</p>
-            </div>
-
-            <div class="card">
-                <i class="fa-solid fa-user-astronaut"></i>
-                <h3>Crew Independence</h3>
-                <p>Designed for deep space missions with significant communication delays, allowing the crew to make informed medical decisions autonomously.</p>
+            <div class="content-box">
+                <h3><i class="fa-solid fa-shield-heart"></i> Challenges</h3>
+                <ul>
+                    <li>Ensuring 100% medical accuracy and safety.</li>
+                    <li>Collecting and handling sensitive biometric data.</li>
+                    <li>Developing a user-friendly interface for high-stress environments.</li>
+                </ul>
             </div>
         </div>
+    </section>
+
+    <section id="technology">
+        <h2>Technology & Constraints</h2>
+        <div class="content-box">
+            <h3>Core Functions</h3>
+            <div class="grid" style="margin-top: 20px;">
+                <ul>
+                    <li><span class="accent">Biometric Monitoring:</span> Continuous health tracking using wearable and environmental sensors.</li>
+                    <li><span class="accent">Personalized Engine:</span> Recommendations based on current issues, sensor data, and medical history.</li>
+                    <li><span class="accent">Privacy:</span> All crew data is handled with total encryption and privacy.</li>
+                </ul>
+                <ul>
+                    <li><span class="accent">Processing:</span> High-level Machine Learning and AI processing.</li>
+                    <li><span class="accent">Multi-Modal UI:</span> Interaction via keyboard, audio, and real-time data feeds.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="content-box">
+                <h3>System Constraints</h3>
+                <ul>
+                    <li>Limited computing power available on-station.</li>
+                    <li>Platform-wide software compatibility.</li>
+                    <li>Strict data privacy requirements.</li>
+                </ul>
+            </div>
+            <div class="content-box">
+                <h3>Environmental Constraints</h3>
+                <ul>
+                    <li><span class="accent">No Internet Access:</span> System must function entirely offline.</li>
+                    <li>Noisy/distracting spacecraft environments.</li>
+                    <li>Support for multiple unique crew members.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="team">
+        <h2 style="text-align: center;">The Team</h2>
+        <p style="text-align: center; color: var(--text-muted);">Developed by dedicated students for the NASA HUNCH Program.</p>
     </section>
 
     <footer>
