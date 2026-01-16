@@ -19,7 +19,7 @@
             --glass-border: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
@@ -37,7 +37,7 @@
             width: 100%; height: 100%;
             background: 
                 radial-gradient(circle at 10% 20%, rgba(58, 12, 163, 0.4) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.2) 0% , transparent 40%);
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.2) 0%, transparent 40%);
             z-index: -1;
         }
 
@@ -56,7 +56,7 @@
 
         .logo { font-size: 1.5rem; font-weight: 900; text-shadow: 0 0 10px var(--primary-glow); }
         .logo span { color: var(--primary-glow); }
-        .nav-links a { color: var(--text-muted); text-decoration: none; margin-left: 30px; transition: 0.3s; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; margin-left: 30px; transition: 0.3s; font-size: 0.9rem; }
         .nav-links a:hover { color: var(--primary-glow); text-shadow: 0 0 8px var(--primary-glow); }
 
         .hero {
@@ -70,28 +70,33 @@
         }
 
         .hero h1 {
-            font-size: 4rem;
+            font-size: clamp(3rem, 10vw, 5rem);
             background: linear-gradient(90deg, #fff, var(--primary-glow));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
         }
 
         /* --- CONTENT SECTIONS --- */
         section { padding: 100px 10%; }
-        h2 { font-size: 2.5rem; margin-bottom: 30px; color: var(--primary-glow); text-align: center; }
+        h2 { font-size: 2.2rem; margin-bottom: 40px; color: var(--primary-glow); text-align: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+        h3 { margin-bottom: 15px; color: #fff; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        h3 i { color: var(--primary-glow); }
         
         .content-box {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            padding: 40px;
-            border-radius: 20px;
-            margin-bottom: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            height: 100%;
         }
 
+        .full-width { grid-column: 1 / -1; margin-bottom: 25px; }
+
         ul { list-style: none; }
-        li { margin-bottom: 15px; position: relative; padding-left: 25px; color: var(--text-muted); }
+        li { margin-bottom: 12px; position: relative; padding-left: 25px; color: var(--text-muted); font-size: 0.95rem; }
         li::before {
-            content: '▹';
+            content: '•';
             position: absolute;
             left: 0;
             color: var(--primary-glow);
@@ -100,14 +105,21 @@
 
         .accent { color: var(--primary-glow); font-weight: bold; }
 
-        /* --- TECHNOLOGY GRID --- */
+        /* --- LAYOUT GRID --- */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 25px;
         }
 
-        footer { text-align: center; padding: 40px; border-top: 1px solid var(--glass-border); color: var(--text-muted); }
+        footer { text-align: center; padding: 40px; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.8rem; }
+
+        @media (max-width: 768px) {
+            section { padding: 80px 5%; }
+            nav { flex-direction: column; padding: 15px; }
+            .nav-links { margin-top: 10px; }
+            .nav-links a { margin: 0 10px; }
+        }
     </style>
 </head>
 <body>
@@ -124,35 +136,42 @@
 
     <section class="hero" id="home">
         <h1>ASTRO AID</h1>
-        <p style="font-size: 1.5rem; margin-top: 10px;"> An AI Medical Assistant for Deep Space</p>
-        <div class="content-box" style="margin-top: 40px; max-width: 800px; text-align: left;">
-            <p>Our main goal is to assist Astronauts on long-duration missions to obtain critical medical diagnosis and advice.</p>
-            <ul style="margin-top: 20px;">
-                <li><span class="accent">Always Available:</span> Provides medical guidance 7 days a week, 24 hours a day.</li>
-                <li><span class="accent">Evolving Intelligence:</span> Our AI learns from cases and is trained to provide detailed solutions for most medical scenarios.</li>
-                <li><span class="accent">Impact:</span> Demonstrating the power of AI to bridge healthcare gaps between Earth and the stars.</li>
-            </ul>
-        </div>
+        <p style="font-size: 1.4rem; color: var(--text-muted); max-width: 700px; font-family: 'Orbitron'; letter-spacing: 1px;">
+            An AI medical assistant
+        </p>
+        <a href="#mission" style="margin-top: 40px; color: var(--primary-glow); text-decoration: none; border: 1px solid var(--primary-glow); padding: 12px 30px; border-radius: 4px; font-family: 'Orbitron'; font-size: 0.8rem; text-transform: uppercase; transition: 0.3s;">Explore Project</a>
     </section>
 
     <section id="mission">
-        <h2>The Mission</h2>
+        <h2>Mission Briefing</h2>
+        
         <div class="grid">
-            <div class="content-box">
-                <h3><i class="fa-solid fa-triangle-exclamation"></i> The Problem</h3>
-                <p>Astronauts face extreme isolation and communication delays:</p>
+            <div class="content-box full-width">
+                <h3><i class="fa-solid fa-bullseye"></i> Project Overview</h3>
                 <ul>
-                    <li>No doctors on board for deep space transit.</li>
-                    <li>Communication blackouts lasting up to <span class="accent">2 weeks</span>.</li>
-                    <li>Real-time consultation with Earth is often impractical.</li>
+                    <li><span class="accent">Primary Goal:</span> Assist astronauts on long-duration missions with medical advice and diagnosis.</li>
+                    <li><span class="accent">Availability:</span> Provides medical support 24 hours a day, 7 days a week.</li>
+                    <li><span class="accent">Machine Learning:</span> System learns from cases and is trained to provide solutions for various medical scenarios.</li>
+                    <li><span class="accent">Conclusion:</span> Demonstrates the potential of AI to improve medical assistance in isolated environments.</li>
                 </ul>
             </div>
+
             <div class="content-box">
-                <h3><i class="fa-solid fa-shield-heart"></i> Challenges</h3>
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Problem Statement</h3>
                 <ul>
-                    <li>Ensuring 100% medical accuracy and safety.</li>
-                    <li>Collecting and handling sensitive biometric data.</li>
-                    <li>Developing a user-friendly interface for high-stress environments.</li>
+                    <li>Lack of medical professionals on board long-duration missions.</li>
+                    <li>Communication blackouts with Earth lasting up to 2 weeks.</li>
+                    <li>Real-time consultation is impractical due to transmission delays.</li>
+                    <li>Extreme isolation creates high risk for medical emergencies.</li>
+                </ul>
+            </div>
+
+            <div class="content-box">
+                <h3><i class="fa-solid fa-gears"></i> Key Challenges</h3>
+                <ul>
+                    <li>Ensuring high medical accuracy and safety.</li>
+                    <li>Secure handling of sensitive crew health data.</li>
+                    <li>Creating a user-friendly interface for high-stress settings.</li>
                 </ul>
             </div>
         </div>
@@ -160,49 +179,52 @@
 
     <section id="technology">
         <h2>Technology & Constraints</h2>
-        <div class="content-box">
-            <h3>Core Functions</h3>
-            <div class="grid" style="margin-top: 20px;">
+        <div class="content-box full-width">
+            <h3><i class="fa-solid fa-microchip"></i> Core Functions</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
                 <ul>
-                    <li><span class="accent">Biometric Monitoring:</span> Continuous health tracking using wearable and environmental sensors.</li>
-                    <li><span class="accent">Personalized Engine:</span> Recommendations based on current issues, sensor data, and medical history.</li>
-                    <li><span class="accent">Privacy:</span> All crew data is handled with total encryption and privacy.</li>
+                    <li><span class="accent">Data Collection:</span> Continuous health tracking via biometric and environmental sensors.</li>
+                    <li><span class="accent">Recommendation Engine:</span> Personalized advice based on sensor data and previous history.</li>
+                    <li><span class="accent">Machine Learning:</span> Advanced AI processing of health trends and anomalies.</li>
                 </ul>
                 <ul>
-                    <li><span class="accent">Processing:</span> High-level Machine Learning and AI processing.</li>
-                    <li><span class="accent">Multi-Model UI:</span> Interaction via keyboard, audio, and real-time data feeds.</li>
+                    <li><span class="accent">Privacy:</span> All crew data is strictly private and locally encrypted.</li>
+                    <li><span class="accent">Multi-Modal UI:</span> Interactive interface supporting keyboard, audio, and real-time feeds.</li>
                 </ul>
             </div>
         </div>
 
         <div class="grid">
             <div class="content-box">
-                <h3>System Constraints</h3>
+                <h3><i class="fa-solid fa-server"></i> System Constraints</h3>
                 <ul>
-                    <li>Limited computing power available on-station.</li>
-                    <li>Platform-wide software compatibility.</li>
-                    <li>Strict data privacy requirements.</li>
+                    <li>Optimization for limited local computing power.</li>
+                    <li>Ensuring software compatibility across different platforms.</li>
+                    <li>Strict adherence to data privacy and security protocols.</li>
                 </ul>
             </div>
+
             <div class="content-box">
-                <h3>Environmental Constraints</h3>
+                <h3><i class="fa-solid fa-earth-americas"></i> Environmental Constraints</h3>
                 <ul>
-                    <li><span class="accent">No Internet Access:</span> System must function entirely offline.</li>
-                    <li>Noisy/distracting spacecraft environments.</li>
-                    <li>Support for multiple unique crew members.</li>
+                    <li><span class="accent">Connectivity:</span> System must function entirely without internet access.</li>
+                    <li><span class="accent">Atmosphere:</span> Support for noisy or distracting spacecraft settings.</li>
+                    <li><span class="accent">Diversity:</span> Adaptable for different users and mission conditions.</li>
                 </ul>
             </div>
         </div>
     </section>
 
     <section id="team">
-        <h2 style="text-align: center;">The Team</h2>
-        <p style="text-align: center; color: var(--text-muted);">Developed by dedicated students for the NASA HUNCH Program.</p>
+        <h2>Project Team</h2>
+        <div class="content-box" style="text-align: center;">
+            <p style="color: var(--text-muted); font-size: 1rem;">This initiative is a NASA HUNCH Project developed by student innovators to solve real-world aerospace challenges.</p>
+        </div>
     </section>
 
     <footer>
         <p>&copy; 2024 Astro Aid Project. All Rights Reserved.</p>
-        <p>Created for the NASA HUNCH Program.</p>
+        <p>Developed for the NASA HUNCH Program.</p>
     </footer>
 
 </body>
